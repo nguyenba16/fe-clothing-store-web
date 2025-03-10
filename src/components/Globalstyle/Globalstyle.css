@@ -1,0 +1,49 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply font-text;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-text;
+  }
+}
+
+:root {
+  --primary-color: '#233000';
+  --text-desc: '#4D4D4D';
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  text-rendering: optimizeSpeed;
+}
+
+.slick-prev:before,
+.slick-next:before {
+  display: none !important;
+}
+.slick-slide {
+  width: 300px !important;
+  display: inline-block !important;
+  margin-left: 10px !important;
+  height: 300px !important;
+}
+
+.custom-slider .slick-slide {
+  padding: 0 10px;
+}
+
