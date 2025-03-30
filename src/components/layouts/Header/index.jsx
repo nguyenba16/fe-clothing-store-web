@@ -5,6 +5,7 @@ import searchlogo from '../../../assets/Icon/search.svg'
 import logo from '../../../assets/Logo Website.png'
 import { routes } from '../../../routes'
 import userlogo from '../../../assets/Icon/user.svg'
+import bard from '../../../assets/Icon/bard.svg'
 export default function Header() {
   const [scrolled, setScrolled] = useState(false)
 
@@ -65,7 +66,7 @@ export default function Header() {
             `relative font-medium text-[20px] group flex items-center ${isActive ? 'half-underline' : ''}`
               }
               style={({ isActive }) => ({
-            color: isActive ? '#FFF671' : 'black',
+            color: isActive ? '#A3804D' : 'black',
               })}
             >
               Sản phẩm
@@ -89,7 +90,7 @@ export default function Header() {
           `relative font-medium text-[20px] group ${isActive ? 'half-underline' : ''}`
             }
             style={({ isActive }) => ({
-          color: isActive ? '#FFF671' : 'black',
+          color: isActive ? '#A3804D' : 'black',
             })}
           >
             Hàng mới
@@ -99,13 +100,19 @@ export default function Header() {
           <NavLink
             to={routes.TRYON}
             className={({ isActive }) =>
-          `relative font-medium text-[20px] group ${isActive ? 'half-underline' : ''}`
+          `relative flex font-medium text-[20px] group ${isActive ? 'half-underline' : ''}`
             }
             style={({ isActive }) => ({
-          color: isActive ? '#FFF671' : 'black',
+          color: isActive ? '#A3804D' : 'black',
             })}
           >
             Thử đồ
+            
+            <img
+              src={bard}
+              alt='Bard'
+              className='h-[20px] transition-all duration-300 group-hover:filter group-hover:brightness+200 group-hover:scale-110'
+            />
             <span className='absolute left-1/4 bottom-0 w-1/2 h-[2px] bg-black scale-x-0 group-hover:scale-x-100 transition-transform duration-300'></span>
           </NavLink>
         </div>
