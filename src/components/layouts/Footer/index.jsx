@@ -28,7 +28,7 @@ export default function Footer() {
         </div>
 
         <div>
-          <div className='text-white text-[25px] mb-3 font-bold'>Về NapoliZza</div>
+          <div className='text-white text-[25px] mb-3 font-bold'>Về Élégante</div>
           <ul>
             <li>
               <NavLink
@@ -45,7 +45,7 @@ export default function Footer() {
                 className='text-white text-[15px] hover:text-[#FFF671]'
                 onClick={ClickOnTop}
               >
-                Cam kết của NapoliZza
+                Cam kết của Élégante
               </NavLink>
             </li>
           </ul>
@@ -84,7 +84,7 @@ export default function Footer() {
                 className='text-white text-[15px] hover:text-[#FFF671]'
                 onClick={ClickOnTop}
               >
-                Hướng dẫn đặt bàn
+                Hướng dẫn hàng
               </NavLink>
             </li>
             <li>
@@ -101,7 +101,7 @@ export default function Footer() {
       </div>
       <div className='border border-white border-dashed absolute bottom-[100px] w-[85%] left-1/2 -translate-x-1/2'></div>
       <div className='absolute bottom-[45px] text-white text-[15px]'>
-        © 2025 - Bản quyền thuộc Nguyễn Công Bá 
+        © 2025 - Bản quyền thuộc Élégante
       </div>
     </div>
   )

@@ -1,9 +1,9 @@
 export const routes = {
   HOME: '/',
   ABOUTUS: '/about-us',
-  NEWPRODUCTS: "/new-products",
-  SIGNIN: '/logn-in',
-  SIGNUP: '/logn-out',
+  NEWPRODUCTS: '/new-products',
+  SIGNIN: '/signin',
+  SIGNUP: '/signup',
   TRYON: '/try-on',
-  PRODUCTCATEGORY: "product-category"
+  PRODUCTCATEGORY: 'product-category',
 }
