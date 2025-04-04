@@ -14,7 +14,7 @@ root.render(
       <Router>
         <AuthProvider>
           <ToastContainer autoClose={1000} />
-            <App />
+          <App />
         </AuthProvider>
       </Router>
     </GlobalStyle>

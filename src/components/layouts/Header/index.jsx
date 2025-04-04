@@ -1,5 +1,5 @@
 import { NavLink, Link } from 'react-router-dom'
-import logo from "../../../assets/images/logo.svg"
+import logo from '../../../assets/images/logo.svg'
 import { routes } from '../../../routes'
 import { useState, useEffect } from 'react'
 import useAuth from '../../../stores/useAuth'
@@ -7,7 +7,7 @@ import AccountMenu from '../../components/AccountMenu'
 export default function Header() {
   const [scrolled, setScrolled] = useState(false)
   const { user } = useAuth()
-  
+
   console.log(user)
   useEffect(() => {
     const handleScroll = () => {
@@ -88,7 +88,7 @@ export default function Header() {
       <div className='min-w-[21vw] flex justify-end'>
         {user ? (
           <div className='max-md:hidden'>
-            <AccountMenu user={user}/>
+            <AccountMenu user={user} />
           </div>
         ) : (
           <div className='flex gap-4'>

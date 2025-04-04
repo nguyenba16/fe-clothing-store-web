@@ -15,7 +15,12 @@ import useAuth from '../../stores/useAuth'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faStore, faUser, faClockRotateLeft, faRightFromBracket } from '@fortawesome/free-solid-svg-icons'
+import {
+  faStore,
+  faUser,
+  faClockRotateLeft,
+  faRightFromBracket,
+} from '@fortawesome/free-solid-svg-icons'
 export default function AccountMenu({ user }) {
   const { logout, setUser } = useAuth()
   const navigate = useNavigate()
@@ -107,20 +112,20 @@ export default function AccountMenu({ user }) {
       >
         <Link to={routes.DETAIL_ACCOUNT}>
           <MenuItem onClick={handleClose} sx={{ paddingTop: '8px', paddingBottom: '8px' }}>
-            <FontAwesomeIcon icon={faUser} className='mr-2' size='lg'/>
+            <FontAwesomeIcon icon={faUser} className='mr-2' size='lg' />
             Tài khoản của tôi
           </MenuItem>
         </Link>
         <Link to={routes.ORDER_TRACKING}>
           <MenuItem onClick={handleClose} sx={{ paddingTop: '8px', paddingBottom: '8px' }}>
-            <FontAwesomeIcon icon={faClockRotateLeft} className='mr-2' size='lg'/>
+            <FontAwesomeIcon icon={faClockRotateLeft} className='mr-2' size='lg' />
             Lịch sử mua hàng
           </MenuItem>
         </Link>
         {user.role == 'ADMIN' && (
           <Link to={routes.RESTAURANT_DASHBOARD}>
             <MenuItem onClick={handleClose} sx={{ paddingTop: '8px', paddingBottom: '8px' }}>
-              <FontAwesomeIcon icon={faStore} className='mr-2' size='lg'/>
+              <FontAwesomeIcon icon={faStore} className='mr-2' size='lg' />
               Nhà hàng của tôi
             </MenuItem>
           </Link>
@@ -129,7 +134,7 @@ export default function AccountMenu({ user }) {
         <Divider sx={{ marginTop: '5px', marginBottom: '5px' }} />
 
         <MenuItem onClick={() => handleLogout()}>
-        <FontAwesomeIcon icon={faRightFromBracket} className='mr-2' size='lg'/>
+          <FontAwesomeIcon icon={faRightFromBracket} className='mr-2' size='lg' />
           Đăng xuất
         </MenuItem>
       </Menu>

@@ -1,5 +1,5 @@
 const userEndpoints = {
-    getme: "/customer/profile"
+  getme: '/customer/profile',
 }
 
 export default userEndpoints

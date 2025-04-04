@@ -19,7 +19,7 @@ const schema = yup.object().shape({
 
 export default function SignIn() {
   const navigation = useNavigate()
-  const {setUser, setLoading} = useAuth()
+  const { setUser, setLoading } = useAuth()
   const {
     register,
     handleSubmit,
@@ -32,20 +32,19 @@ export default function SignIn() {
     },
   })
 
-
   const onSubmit = async (data) => {
     try {
       console.log(data)
-      const res = await authApi.login(data.email,data.password)
-      if (res.data.data){
+      const res = await authApi.login(data.email, data.password)
+      if (res.data.data) {
         const response = await authApi.getme()
         setUser(response.data.data)
-        toast.success("Đăng nhập thành công!")
+        toast.success('Đăng nhập thành công!')
         navigation(routes.HOME)
       }
     } catch (error) {
-      toast.error("Đăng nhập không thành công")
-      console.log("Lỗi đăng nhập:", error)
+      toast.error('Đăng nhập không thành công')
+      console.log('Lỗi đăng nhập:', error)
     }
   }
 
