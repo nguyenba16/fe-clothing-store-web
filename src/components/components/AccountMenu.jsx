@@ -63,11 +63,16 @@ export default function AccountMenu({ user }) {
             aria-expanded={open ? 'true' : undefined}
           >
             <div className='flex gap-3 justify-start items-center'>
-              <div className='text-white flex-col gap-2 text-sm justify-start'>
-                <p className='font-bold text-[20px] text-right'>{user?.name}</p>
-                <p className='text-[15px] italic font-light'>{user?.email}</p>
+              <div className=' flex-col gap-2 text-sm justify-start'>
+                <p className='font-bold text-[20px] text-right text-black'>{user?.name}</p>
+                <p className='text-[15px] italic font-light text-black'>{user?.email}</p>
               </div>
-              <Avatar sx={{ width: 45, height: 45 }} src={user?.avatar?.url} alt='avatar' />
+              <Avatar
+                sx={{ width: 50, height: 50 }}
+                src={user?.avatar?.url}
+                alt='avatar'
+                className='border-2 rounded-full border-black'
+              />
             </div>
           </IconButton>
         </Tooltip>
@@ -126,7 +131,7 @@ export default function AccountMenu({ user }) {
           <Link to={routes.RESTAURANT_DASHBOARD}>
             <MenuItem onClick={handleClose} sx={{ paddingTop: '8px', paddingBottom: '8px' }}>
               <FontAwesomeIcon icon={faStore} className='mr-2' size='lg' />
-              Nhà hàng của tôi
+              Trang quản lý của Admin
             </MenuItem>
           </Link>
         )}
