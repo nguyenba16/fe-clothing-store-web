@@ -115,7 +115,7 @@ export default function AccountMenu({ user }) {
         transformOrigin={{ horizontal: 'right', vertical: 'top' }}
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
       >
-        <Link to={routes.DETAIL_ACCOUNT}>
+        <Link to={routes.PROFILE}>
           <MenuItem onClick={handleClose} sx={{ paddingTop: '8px', paddingBottom: '8px' }}>
             <FontAwesomeIcon icon={faUser} className='mr-2' size='lg' />
             Tài khoản của tôi

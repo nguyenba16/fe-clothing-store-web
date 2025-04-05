@@ -6,4 +6,5 @@ export const routes = {
   SIGNUP: '/signup',
   TRYON: '/try-on',
   PRODUCTCATEGORY: 'product-category',
+  PROFILE: '/profile',
 }
