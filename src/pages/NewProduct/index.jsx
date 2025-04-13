@@ -1,8 +1,3 @@
-
-export default function NewProducts (){
-return (
-    <div>
-        new product
-    </div>
-)
+export default function NewProducts() {
+  return <div>new product</div>
 }
