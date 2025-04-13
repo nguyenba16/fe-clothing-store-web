@@ -1,4 +1,4 @@
-// import logo from '../../../assets/images/Logo.svg'
+import logo from '../../../assets/Logo Website.png'
 import { NavLink, Link } from 'react-router-dom'
 import { routes } from '../../../routes'
 
@@ -11,10 +11,10 @@ export default function Footer() {
   }
 
   return (
-    <div className='bg-primary h-[610px] items-center px-[100px] py-[40px] relative'>
+    <div className='bg-primary h-[500px] items-center px-[100px] py-[40px] relative'>
       <div className='flex gap-8 pt-[100px] w-full justify-between '>
         <Link to={routes.HOME} onClick={ClickOnTop}>
-          {/* <img src={logo} alt='Logo Website' className='h-[90px] mt-[100px]' /> */}
+          <img src={logo} alt='Logo Website' className='h-[50px] mt-[100px]' />
         </Link>
         <div>
           <div className='text-white text-[25px] mb-3 font-bold'>Liên hệ</div>
