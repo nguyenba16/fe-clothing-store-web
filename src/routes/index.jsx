@@ -7,4 +7,7 @@ export const routes = {
   TRYON: '/try-on',
   PRODUCTCATEGORY: 'product-category',
   PROFILE: '/profile',
+  DASHBOARD: '/admin/dashboard',
+  MANAGEORDER: '/admin/manage-order',
+  MANAGEPRODUCT: '/admin/manage-product',
 }
