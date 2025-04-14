@@ -11,7 +11,7 @@ class AuthApi {
       })
       return res
     } catch (error) {
-      throw new Error('Có lỗi xảy ra')
+      throw new Error('Có lỗi xảy ra: ', error)
     }
   }
   async logout() {
@@ -19,7 +19,7 @@ class AuthApi {
       const res = await axiosClient.post(`${authEndpoints.logout}`)
       return res
     } catch (error) {
-      throw new Error('Có lỗi xảy ra')
+      throw new Error('Có lỗi xảy ra: ', error)
     }
   }
 
@@ -28,7 +28,7 @@ class AuthApi {
       const res = await axiosClient.get(`${userEndpoints.getme}`)
       return res
     } catch (error) {
-      throw new Error('Có lỗi xảy ra')
+      throw new Error('Có lỗi xảy ra: ', error)
     }
   }
 }

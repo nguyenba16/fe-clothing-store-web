@@ -1,64 +1,67 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react'
 
 export default function Carousel({ slides }) {
-  const [currentSlide, setCurrentSlide] = useState(0);
-  
+  const [currentSlide, setCurrentSlide] = useState(0)
+
   // Auto-sliding functionality
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentSlide((prevSlide) => (prevSlide + 1) % slides.length);
-    }, 3000);
-    
-    return () => clearInterval(interval);
-  }, [slides.length]);
+      setCurrentSlide((prevSlide) => (prevSlide + 1) % slides.length)
+    }, 3000)
+
+    return () => clearInterval(interval)
+  }, [slides.length])
 
   // Navigate to previous slide
   const prevSlide = () => {
-    setCurrentSlide((prevSlide) => 
-      prevSlide === 0 ? slides.length - 1 : prevSlide - 1
-    );
-  };
+    setCurrentSlide((prevSlide) => (prevSlide === 0 ? slides.length - 1 : prevSlide - 1))
+  }
 
   // Navigate to next slide
   const nextSlide = () => {
-    setCurrentSlide((prevSlide) => 
-      (prevSlide + 1) % slides.length
-    );
-  };
-  
+    setCurrentSlide((prevSlide) => (prevSlide + 1) % slides.length)
+  }
+
   return (
-    <div style={{
-      position: 'relative',
-      maxWidth: '1300px',
-      margin: '0 auto',
-      overflow: 'hidden',
-    }}>
-      <div style={{
-        display: 'flex',
-        transition: 'transform 0.5s ease-in-out',
-        transform: `translateX(-${currentSlide * 100}%)`,
-        height: '400px',
-      }}>
+    <div
+      style={{
+        position: 'relative',
+        maxWidth: '1300px',
+        margin: '0 auto',
+        overflow: 'hidden',
+      }}
+    >
+      <div
+        style={{
+          display: 'flex',
+          transition: 'transform 0.5s ease-in-out',
+          transform: `translateX(-${currentSlide * 100}%)`,
+          height: '400px',
+        }}
+      >
         {slides.map((slide, index) => (
-          <div key={index} style={{ 
-            minWidth: '100%', 
-            height: '100%' 
-          }}>
-            <img 
+          <div
+            key={index}
+            style={{
+              minWidth: '100%',
+              height: '100%',
+            }}
+          >
+            <img
               src={slide}
               alt={`Slide ${index + 1}`}
-              style={{ 
-                width: '100%', 
-                height: '100%', 
-                objectFit: 'cover' 
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
               }}
             />
           </div>
         ))}
       </div>
-      
+
       {/* Navigation buttons */}
-      <button 
+      <button
         onClick={prevSlide}
         style={{
           position: 'absolute',
@@ -77,7 +80,7 @@ export default function Carousel({ slides }) {
       >
         &lt;
       </button>
-      <button 
+      <button
         onClick={nextSlide}
         style={{
           position: 'absolute',
@@ -96,15 +99,17 @@ export default function Carousel({ slides }) {
       >
         &gt;
       </button>
-      
+
       {/* Indicator dots */}
-      <div style={{
-        display: 'flex',
-        justifyContent: 'center',
-        position: 'absolute',
-        bottom: '10px',
-        width: '100%',
-      }}>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          position: 'absolute',
+          bottom: '10px',
+          width: '100%',
+        }}
+      >
         {slides.map((_, index) => (
           <button
             key={index}
@@ -122,5 +127,5 @@ export default function Carousel({ slides }) {
         ))}
       </div>
     </div>
-  );
+  )
 }

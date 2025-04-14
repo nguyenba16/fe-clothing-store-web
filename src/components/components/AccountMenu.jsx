@@ -115,7 +115,7 @@ export default function AccountMenu({ user }) {
         transformOrigin={{ horizontal: 'right', vertical: 'top' }}
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
       >
-        <Link to={routes.DETAIL_ACCOUNT}>
+        <Link to={routes.PROFILE}>
           <MenuItem onClick={handleClose} sx={{ paddingTop: '8px', paddingBottom: '8px' }}>
             <FontAwesomeIcon icon={faUser} className='mr-2' size='lg' />
             Tài khoản của tôi
@@ -128,7 +128,7 @@ export default function AccountMenu({ user }) {
           </MenuItem>
         </Link>
         {user.role == 'ADMIN' && (
-          <Link to={routes.RESTAURANT_DASHBOARD}>
+          <Link to={routes.MANAGEORDER}>
             <MenuItem onClick={handleClose} sx={{ paddingTop: '8px', paddingBottom: '8px' }}>
               <FontAwesomeIcon icon={faStore} className='mr-2' size='lg' />
               Trang quản lý của Admin

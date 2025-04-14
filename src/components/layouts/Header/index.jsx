@@ -28,12 +28,12 @@ export default function Header() {
 
   return (
     <div
-      className={`bg-white w-full h-[100px] flex items-center px-[50px] justify-between sticky top-0 z-50`}
-      // ${
-      //   scrolled
-      //     ? 'shadow-[0_4px_10px_rgba(0,0,0,0.8)] rounded-b-[20px]'
-      //     : 'shadow-none rounded-b-none'
-      // }
+      className={`bg-white w-full h-[100px] flex items-center px-[50px] justify-between sticky top-0 z-50
+      ${
+        scrolled
+          ? 'shadow-[0_4px_10px_rgba(0,0,0,0.8)] rounded-b-[20px]'
+          : 'shadow-none rounded-b-none'
+      }`}
     >
       <Link to={routes.HOME}>
         <img src={logo} alt='Logo Website' className='w-[12vw]' />

@@ -1,0 +1,57 @@
+.product-carousel-container {
+  padding: 20px 0;
+  position: relative;
+}
+
+.carousel-title {
+  color: var(--black, #000);
+  font-family: Poppins;
+  font-size: 40px;
+  font-style: normal;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 30px;
+  letter-spacing: -1px;
+}
+
+.product-slider {
+  width: 100%;
+  margin: 0 auto;
+}
+
+.carousel-slide {
+  padding: 0 10px;
+  box-sizing: border-box;
+}
+
+/* Customizing slick carousel elements */
+.product-slider .slick-arrow {
+  z-index: 1;
+}
+
+.product-slider .slick-prev {
+  left: -10px;
+}
+
+.product-slider .slick-next {
+  right: -10px;
+}
+
+.product-slider .slick-dots {
+  bottom: -30px;
+}
+
+/* Make sure carousel items are properly sized */
+@media (max-width: 768px) {
+  .carousel-slide {
+    padding: 0 5px;
+  }
+
+  .product-slider .slick-prev {
+    left: -5px;
+  }
+
+  .product-slider .slick-next {
+    right: -5px;
+  }
+}

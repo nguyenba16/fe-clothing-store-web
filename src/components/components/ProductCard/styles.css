@@ -87,23 +87,23 @@
   cursor: not-allowed;
 }
 .buy-now-btn {
-    color: #E08CFF;
-    padding: 6px 12px;
-    border-radius: 4px;
-    font-size: 12px;
-    cursor: pointer;
+  color: #e08cff;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
 }
-.buy-now-btn{
-    border-radius: 100px;
-    border: 1px solid var(--primary, #E08CFF);
+.buy-now-btn {
+  border-radius: 100px;
+  border: 1px solid var(--primary, #e08cff);
 }
 .buy-now-btn:hover {
-    background-color: var(--primary, #E08CFF);
-    color: white;
+  background-color: var(--primary, #e08cff);
+  color: white;
 }
 
 .buy-now-btn:disabled {
-    background-color: #f0f0f0;
-    color: #aaa;
-    cursor: not-allowed;
+  background-color: #f0f0f0;
+  color: #aaa;
+  cursor: not-allowed;
 }

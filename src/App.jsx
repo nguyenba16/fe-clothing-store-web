@@ -8,6 +8,11 @@ import SignUp from './pages/SignUp'
 import { routes } from './routes'
 import LoadingOverlay from 'react-loading-overlay-ts'
 import useAuth from './stores/useAuth'
+import Profile from './pages/Profile'
+import Dashboard from './pages/Admin/Dashboard'
+import ManageOder from './pages/Admin/ManageOder'
+import LayoutForAmin from './components/LayoutForAdmin'
+import ManageProduct from './pages/Admin/ManageProduct'
 import { useState, useEffect } from 'react'
 
 function App() {
@@ -26,9 +31,14 @@ function App() {
       <Route path={routes.SIGNIN} element={<SignIn />} />
       <Route path={routes.SIGNUP} element={<SignUp />} />
       <Route element={<DefaultLayout />}>
-        <Route path='/' element={<Home />} />
-        <Route path='/new-products' element={<NewProducts />} />
-        <Route path='/try-on' element={<TryOn />} />
+        <Route path={routes.HOME} element={<Home />} />
+        <Route path={routes.NEWPRODUCTS} element={<NewProducts />} />
+        <Route path={routes.TRYON} element={<TryOn />} />
+        <Route path={routes.PROFILE} element={<Profile />} />
+      </Route>
+      <Route element={<LayoutForAmin />}>
+        <Route path={routes.MANAGEORDER} element={<ManageOder />} />
+        <Route path={routes.MANAGEPRODUCT} element={<ManageProduct />} />
       </Route>
     </Routes>
   )
