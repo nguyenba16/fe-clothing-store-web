@@ -1,6 +1,6 @@
-import { Routes, Route } from 'react-router-dom'
+import { Route, Routes } from 'react-router-dom'
+import DefaultLayout from './layouts/DefaultLayout'
 import Home from './pages/Home'
-import DefaultLayout from './components/DefaultLayout'
 import NewProducts from './pages/NewProduct'
 import TryOn from './pages/TryOn'
 import SignIn from './pages/Signin'

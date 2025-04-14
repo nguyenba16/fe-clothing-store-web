@@ -1,0 +1,40 @@
+.scrolling-container {
+  width: 100%;
+  overflow: hidden;
+  background-color: #f8f8f8;
+  padding: 10px 0;
+}
+
+.scrolling-wrapper {
+  display: flex;
+  width: fit-content;
+  animation: scroll 20s linear infinite;
+}
+
+.scrolling-text {
+  display: flex;
+  white-space: nowrap;
+}
+
+.hot-deal-item {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #ff4500;
+  margin: 0 2vw;
+  text-transform: uppercase;
+}
+
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    /* Move exactly the width of one set of items */
+    transform: translateX(-100%);
+  }
+}
+
+/* Pause animation on hover (optional) */
+.scrolling-container:hover .scrolling-wrapper {
+  animation-play-state: paused;
+}
