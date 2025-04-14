@@ -1,6 +1,6 @@
 import React from 'react'
 import './styles.css'
-import addcart from '../../assets/icons/addcart.svg'
+import addcart from '../../../assets/icons/addcart.svg'
 const ProductCard = ({ image, title, description, rating, price }) => {
   return (
     <div className='product-card'>

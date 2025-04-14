@@ -1,13 +1,13 @@
 import { Tabs } from 'antd'
 import React, { useState } from 'react'
-import photo1 from '../../assets/images/1.jpeg'
-import photo2 from '../../assets/images/2.avif'
-import photo3 from '../../assets/images/3.avif'
-import photo4 from '../../assets/images/san pham.png'
-import Carousel from '../../components/Carousel'
-import ProductCard from '../../components/ProductCard'
-import ProductCarousel from '../../components/ProductCarousel'
-import ScrollingText from '../../components/ScrollingText'
+import photo1 from '../../assets/images/home/1.jpeg'
+import photo2 from '../../assets/images/home/2.avif'
+import photo3 from '../../assets/images/home/3.avif'
+import photo4 from '../../assets/images/home/san pham.png'
+import Carousel from './components/Carousel'
+import ProductCard from '../../components/components/ProductCard'
+import ProductCarousel from '../../components/components/ProductCarousel'
+import ScrollingText from './components/ScrollingText'
 
 import './styles.css'
 
@@ -182,7 +182,7 @@ export default function Home() {
 
       <div className='featured-products'>
         <h2 className='section-title'>ALL PRODUCTS</h2>
-        <div className='products-grid'>
+        <div className='products-grid mb-20'>
           {sampleProducts.map((product) => (
             <ProductCard
               key={product.id}
