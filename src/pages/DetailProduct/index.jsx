@@ -1,7 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import NoAuthApi from '../../apis/noAuthApi';
 import addcart from '../../assets/icons/addcart.svg';
+import photo4 from '../../assets/images/home/san pham.png';
 import ProductCarousel from '../../components/components/ProductCarousel';
 import StarRating from './components/StarRating';
+
 // Sample product images - replace with your actual images
 const productImages = [
     '/src/assets/images/DetailProduct/vay1.avif',
@@ -14,7 +17,31 @@ const productImages = [
 ];
 const des = 'Lorem ipsum dolor sit amet consectetur. Purus amet vulputate venenatis in adipiscing. Leo eu egestas et arcu in sapien neque quisque. Eleifend vitae tellus lacus venenatis in. Nunc donec ac vitae vitae sed ipsum habitasse. Lorem ipsum dolor sit amet consectetur. Purus amet vulputate venenatis in adipiscing. Leo eu egestas et arcu in sapien neque quisque. Eleifend vitae tellus lacus venenatis in. Nunc donec ac vitae vitae sed ipsum habitasse.';
 
-// Sample reviews data
+// Transform API response data to application's product format
+const transformAPIProducts = (apiData) => {
+    if (!apiData || !Array.isArray(apiData)) return [];
+
+    return apiData.map(product => ({
+        id: product.id,
+        // Use the first image URL from productImage array, or fallback to default image
+        image: product.productImage && product.productImage.length > 0
+            ? product.productImage[0].url
+            : photo4,
+        title: product.productName?.substring(0,20) + (product.productName?.length > 20 ? '...' : '') || 'Không có tên sản phẩm',
+        description: product.desc?.substring(0, 100) + (product.desc?.length > 100 ? '...' : '') || 'Không có mô tả',
+        // Format price with thousand separators and Vietnamese currency
+        price: new Intl.NumberFormat('vi-VN', {
+            style: 'currency',
+            currency: 'VND',
+            minimumFractionDigits: 0
+        }).format(product.price).replace(/\s/g, ''),
+        category: product.categrory?.id || '',
+        // Add additional useful information
+        colors: product.colors || [],
+        rating: product.rating || 0,
+    }));
+};
+
 const sampleReviews = [
     {
         id: 1,
@@ -42,92 +69,8 @@ const sampleReviews = [
     },
 ];
 
-const sampleProducts = [
-    {
-        id: 1,
-        image: photo4,
-        title: 'Áo Thun Nam Basic',
-        description: 'Áo thun nam chất liệu cotton cao cấp, thoáng mát',
-        rating: 4.5,
-        price: '299.000₫',
-        category: '1',
-    },
-    {
-        id: 2,
-        image: photo4,
-        title: 'Quần Jeans Nữ',
-        description: 'Quần jeans nữ dáng ôm, co giãn tốt',
-        rating: 4.7,
-        price: '459.000₫',
-        category: '2',
-    },
-    {
-        id: 3,
-        image: photo4,
-        title: 'Áo Khoác Dù Unisex',
-        description: 'Áo khoác dù chống nắng, chống gió, nhẹ và thoáng khí',
-        rating: 4.3,
-        price: '399.000₫',
-        category: '3',
-    },
-    {
-        id: 4,
-        image: photo4,
-        title: 'Áo Polo Nam',
-        description: 'Áo polo nam thiết kế hiện đại, chất liệu cao cấp',
-        rating: 4.7,
-        price: '459.000₫',
-        category: '1',
-    },
-    {
-        id: 5,
-        image: photo4,
-        title: 'Váy Liền Nữ',
-        description: 'Váy liền nữ phong cách thời trang, trẻ trung',
-        rating: 4.7,
-        price: '559.000₫',
-        category: '2',
-    },
-    {
-        id: 6,
-        image: photo4,
-        title: 'Áo Khoác Bomber',
-        description: 'Áo khoác bomber unisex phong cách thể thao',
-        rating: 4.6,
-        price: '699.000₫',
-        category: '3',
-    },
-    {
-        id: 7,
-        image: photo4,
-        title: 'Áo Thun Trẻ Em',
-        description: 'Áo thun trẻ em in họa tiết ngộ nghĩnh',
-        rating: 4.8,
-        price: '199.000₫',
-        category: '4',
-    },
-    {
-        id: 8,
-        image: photo4,
-        title: 'Mũ Bucket',
-        description: 'Mũ bucket thời trang, phong cách cá tính',
-        rating: 4.5,
-        price: '159.000₫',
-        category: '5',
-    },
-    {
-        id: 9,
-        image: photo4,
-        title: 'Dây Chuyền',
-        description: 'Dây chuyền thời trang, thiết kế tinh tế',
-        rating: 4.7,
-        price: '259.000₫',
-        category: '5',
-    },
-]
-
 export default function DetailProduct() {
-    
+
     const [selectedImage, setSelectedImage] = useState(0);
     const [selectedColor, setSelectedColor] = useState(null);
     const [selectedSize, setSelectedSize] = useState(null);
@@ -136,7 +79,9 @@ export default function DetailProduct() {
     const [reviewRating, setReviewRating] = useState(0);
     const [reviewComment, setReviewComment] = useState('');
     const [showReviewForm, setShowReviewForm] = useState(false);
-
+    const [categoryFilter, setCategoryFilter] = useState('áo');
+    const [productList, setProductList] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
     // Available colors with their hex codes
     const colors = [
         { name: 'Black', hex: '#000000' },
@@ -151,6 +96,26 @@ export default function DetailProduct() {
 
     // Calculate average rating
     const averageRating = reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length;
+
+    //fetch product list by catergories 
+    const fetchProducts = async () => {
+        setIsLoading(true)
+        try {
+            const res = await NoAuthApi.getProductByCategory(categoryFilter)
+            console.log(transformAPIProducts(res.data));
+            setProductList(transformAPIProducts(res.data))
+            setIsLoading(false)
+            return res
+        } catch (error) {
+            setIsLoading(false)
+            console.log('Có lỗi xảy ra', error)
+        }
+    }
+    useEffect(() => {
+        fetchProducts()
+    }
+        , [categoryFilter])
+    // const sampleProducts = transformAPIProducts(productList);
 
     // Handle form submission
     const handleSubmitReview = (e) => {
@@ -409,7 +374,7 @@ export default function DetailProduct() {
             {/* Sản phẩm cùng loại */}
             <div className='max-w-7xl mx-auto p-4 md:p-6 flex flex-col gap-8 font-text'>
                 <div className='text-xl md:text-2xl font-bold uppercase tracking-wide underline text-third'>SẢN PHẨM CÙNG LOẠI</div>
-                <ProductCarousel products={sampleProducts} />
+                <ProductCarousel products={productList} />
             </div>
         </div>
     );
