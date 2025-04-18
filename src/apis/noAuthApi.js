@@ -22,6 +22,17 @@ class noAuthApi {
       console.log('Có lỗi xảy ra', error)
     }
   }
+  async getCatergory() {
+    try {
+      const res = await axiosClient.get(
+        `${noAuthEndpoint.getCategory}`,
+      )
+      return res.data
+    } catch (error) {
+      console.log('Có lỗi xảy ra', error)
+    }
+  }
+  
 }
 
 const NoAuthApi = new noAuthApi()

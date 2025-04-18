@@ -73,7 +73,7 @@ const ProductCard = ({ image, title, description, rating, price, badge, discount
 
       {/* Product details */}
       <div className="p-4">
-        <h3 className="text-lg font-medium mb-1 line-clamp-1 hover:text-blue-600 transition-colors cursor-pointer">{title}</h3>
+        <h3 className="text-lg font-medium mb-1 line-clamp-2 hover:text-blue-600 transition-colors cursor-pointer">{title}</h3>
         <p className="text-sm text-gray-500 mb-2 line-clamp-2">{description}</p>
 
         {/* Rating */}
@@ -88,10 +88,10 @@ const ProductCard = ({ image, title, description, rating, price, badge, discount
 
         {/* Price and button */}
         <div className="flex justify-between items-center mt-auto">
-          <div>
+          <div className='flex flex-col mt-auto'>
             {discount && (
               <span className="text-sm text-gray-400 line-through mr-2">
-                {parseInt(price.replace(/[^\d]/g, '')) * (100 + parseInt(discount)) / 100}.000₫
+                {parseInt(price.replace(/[^\d]/g, '')) * (100 + parseInt(discount)) / 100}₫
               </span>
             )}
             <span className="text-lg font-semibold text-red-600">{price}</span>

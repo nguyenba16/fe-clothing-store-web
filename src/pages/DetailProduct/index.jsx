@@ -102,7 +102,6 @@ export default function DetailProduct() {
         setIsLoading(true)
         try {
             const res = await NoAuthApi.getProductByCategory(categoryFilter)
-            console.log(transformAPIProducts(res.data));
             setProductList(transformAPIProducts(res.data))
             setIsLoading(false)
             return res

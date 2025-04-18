@@ -1,6 +1,7 @@
 import { Tabs } from 'antd'
 import { motion } from 'framer-motion'
 import React, { useEffect, useState } from 'react'
+import NoAuthApi from '../../apis/noAuthApi'
 import photo1 from '../../assets/images/home/1.jpeg'
 import photo2 from '../../assets/images/home/2.avif'
 import photo3 from '../../assets/images/home/3.avif'
@@ -10,45 +11,98 @@ import ProductCarousel from '../../components/components/ProductCarousel'
 import Carousel from './components/Carousel'
 import ScrollingText from './components/ScrollingText'
 
-import './styles.css'
+const categoriesSample = [
+  {
+    id: '1',
+    categroryName: 'QUẦN',
+  },
+  {
+    id: '2',
+    categroryName: 'ÁO',
+  },
+  {
+    id: '3',
+    categroryName: 'ĐỒ LÓT',
+  },
+  {
+    id: '4',
+    categroryName: 'ÁO KHOÁC',
+  },
+  {
+    id: '5',
+    categroryName: 'Phụ kiện',
+  },
+]
 
 export default function Home() {
   const slides = [photo1, photo2, photo3]
   const [activeCategory, setActiveCategory] = useState('1')
   const [isVisible, setIsVisible] = useState(false)
+  const [categories, setCategories] = useState(categoriesSample)
+  const [isLoading, setIsLoading] = useState(false)
+  const [categoryFilter, setCategoryFilter] = useState('1')
+  const [productList, setProductList] = useState([])
+
+  // Chuyển đổi định dạng dữ liệu sản phẩm từ API sang định dạng cho ProductCard
+  const transformAPIProducts = (products) => {
+    return products.map(product => ({
+      id: product.id,
+      image: product.productImage[0].url || photo4, 
+      title: product.productName,
+      description: product.desc,
+      rating: product.rating || 4, // Giá trị mặc định nếu không có rating
+      price: new Intl.NumberFormat('vi-VN', {
+        style: 'currency',
+        currency: 'VND',
+        minimumFractionDigits: 0
+      }).format(product.price).replace(/\s/g, ''),
+      category: product.category?.id || '',
+      
+    }));
+  }
+
+  const fetchCategories = async () => {
+    setIsLoading(true)
+    try {
+      const res = await NoAuthApi.getCatergory()
+      console.log('Danh mục: ', res)
+      setCategories(res.data)
+      setIsLoading(false)
+      return res
+    } catch (error) {
+      setIsLoading(false)
+      console.log('Lỗi lấy danh mục: ', error)
+    }
+  }
+
+  // Lấy categoryName tương ứng với activeCategory
+  const getCategoryName = (categoryId) => {
+    const selectedCategory = categories.find(cat => cat.id === categoryId);
+    return selectedCategory ? selectedCategory.categroryName : '';
+  }
+
+  //fetch product list by catergories 
+  const fetchProducts = async () => {
+    setIsLoading(true)
+    try {
+      const categoryName = getCategoryName(categoryFilter);
+      const res = await NoAuthApi.getProductByCategory(categoryName)
+      console.log('Sản phẩm theo danh mục: ', res)
+      setProductList(transformAPIProducts(res.data))
+      setIsLoading(false)
+      return res
+    } catch (error) {
+      setIsLoading(false)
+      console.log('Có lỗi xảy ra', error)
+    }
+  }
 
   useEffect(() => {
     setIsVisible(true)
-  }, [])
+    fetchCategories()
+    fetchProducts() // Gọi API lấy sản phẩm khi component mount hoặc categoryFilter thay đổi
+  }, [categoryFilter])
 
-  // Categories data
-  const categories = [
-    {
-      key: '1',
-      label: 'QUẦN',
-      icon: '👖',
-    },
-    {
-      key: '2',
-      label: 'ÁO',
-      icon: '👕',
-    },
-    {
-      key: '3',
-      label: 'ĐỒ LÓT',
-      icon: '🧦',
-    },
-    {
-      key: '4',
-      label: 'ÁO KHOÁC',
-      icon: '🧥',
-    },
-    {
-      key: '5',
-      label: 'Phụ kiện',
-      icon: '👜',
-    },
-  ]
 
   // Sample product data
   const sampleProducts = [
@@ -61,7 +115,7 @@ export default function Home() {
       price: '299.000₫',
       category: '1',
       badge: 'BÁN CHẠY',
-      discount: '10%',
+      discount: '20%',
     },
     {
       id: 2,
@@ -139,6 +193,7 @@ export default function Home() {
 
   const handleCategoryChange = (key) => {
     setActiveCategory(key)
+    setCategoryFilter(key) // Cập nhật categoryFilter để kích hoạt lại useEffect và gọi API
   }
 
   // Get products by category
@@ -213,11 +268,10 @@ export default function Home() {
           <div className="categories-tabs">
             <Tabs
               items={categories.map(cat => ({
-                key: cat.key,
+                key: cat.id,
                 label: (
                   <div className="flex items-center gap-2 px-3 py-2">
-                    <span className="text-xl">{cat.icon}</span>
-                    <span>{cat.label}</span>
+                    <span>{cat.categroryName}</span>
                   </div>
                 )
               }))}
@@ -234,9 +288,9 @@ export default function Home() {
               variants={stagger}
               className="category-products"
             >
-              {getProductsByCategory(activeCategory).length > 0 ? (
+              {productList.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                  {getProductsByCategory(activeCategory).map((product) => (
+                  {productList.map((product) => (
                     <motion.div key={product.id} variants={fadeInUp}>
                       <ProductCard
                         image={product.image}
@@ -342,25 +396,25 @@ export default function Home() {
         </div>
       </div>
 
-        {/* Newsletter Section */}
-        <div className="py-16 px-4 md:px-8 bg-gray-100">
-          <div className="max-w-4xl mx-auto bg-white p-8 md:p-12 rounded-2xl shadow-lg">
-            <h3 className="text-2xl md:text-3xl font-bold text-center mb-6">Đăng ký nhận thông tin</h3>
-            <p className="text-gray-600 text-center mb-8">
-              Hãy đăng ký để nhận thông tin về các sản phẩm mới, khuyến mãi hấp dẫn và các sự kiện đặc biệt
-            </p>
-            <div className="flex flex-col md:flex-row gap-4">
-              <input
-                type="email"
-                placeholder="Email của bạn"
-                className="flex-1 border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-black"
-              />
-              <button className="bg-black text-white px-6 py-3 rounded-lg font-medium hover:bg-gray-800 transition duration-300">
-                Đăng ký ngay
-              </button>
-            </div>
+      {/* Newsletter Section */}
+      <div className="py-16 px-4 md:px-8 bg-gray-100">
+        <div className="max-w-4xl mx-auto bg-white p-8 md:p-12 rounded-2xl shadow-lg">
+          <h3 className="text-2xl md:text-3xl font-bold text-center mb-6">Đăng ký nhận thông tin</h3>
+          <p className="text-gray-600 text-center mb-8">
+            Hãy đăng ký để nhận thông tin về các sản phẩm mới, khuyến mãi hấp dẫn và các sự kiện đặc biệt
+          </p>
+          <div className="flex flex-col md:flex-row gap-4">
+            <input
+              type="email"
+              placeholder="Email của bạn"
+              className="flex-1 border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-black"
+            />
+            <button className="bg-black text-white px-6 py-3 rounded-lg font-medium hover:bg-gray-800 transition duration-300">
+              Đăng ký ngay
+            </button>
           </div>
         </div>
+      </div>
     </div>
   )
 }
