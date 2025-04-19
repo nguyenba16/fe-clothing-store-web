@@ -11,6 +11,8 @@ import ProductCarousel from '../../components/components/ProductCarousel'
 import Carousel from './components/Carousel'
 import ScrollingText from './components/ScrollingText'
 
+import { set } from 'react-hook-form'
+
 const categoriesSample = [
   {
     id: '1',
@@ -33,15 +35,102 @@ const categoriesSample = [
     categroryName: 'Phụ kiện',
   },
 ]
-
+// Sample product data
+const sampleProducts = [
+  {
+    id: 1,
+    image: photo4,
+    title: 'Áo Thun Nam Basic',
+    description: 'Áo thun nam chất liệu cotton cao cấp, thoáng mát',
+    rating: 4.5,
+    price: '299.000₫',
+    category: '1',
+    badge: 'BÁN CHẠY',
+    discount: '20%',
+  },
+  {
+    id: 2,
+    image: photo4,
+    title: 'Quần Jeans Nữ',
+    description: 'Quần jeans nữ dáng ôm, co giãn tốt',
+    rating: 4.7,
+    price: '459.000₫',
+    category: '2',
+  },
+  {
+    id: 3,
+    image: photo4,
+    title: 'Áo Khoác Dù Unisex',
+    description: 'Áo khoác dù chống nắng, chống gió, nhẹ và thoáng khí',
+    rating: 4.3,
+    price: '399.000₫',
+    category: '3',
+  },
+  {
+    id: 4,
+    image: photo4,
+    title: 'Áo Polo Nam',
+    description: 'Áo polo nam thiết kế hiện đại, chất liệu cao cấp',
+    rating: 4.7,
+    price: '459.000₫',
+    category: '1',
+  },
+  {
+    id: 5,
+    image: photo4,
+    title: 'Váy Liền Nữ',
+    description: 'Váy liền nữ phong cách thời trang, trẻ trung',
+    rating: 4.7,
+    price: '559.000₫',
+    category: '2',
+  },
+  {
+    id: 6,
+    image: photo4,
+    title: 'Áo Khoác Bomber',
+    description: 'Áo khoác bomber unisex phong cách thể thao',
+    rating: 4.6,
+    price: '699.000₫',
+    category: '3',
+  },
+  {
+    id: 7,
+    image: photo4,
+    title: 'Áo Thun Trẻ Em',
+    description: 'Áo thun trẻ em in họa tiết ngộ nghĩnh',
+    rating: 4.8,
+    price: '199.000₫',
+    category: '4',
+  },
+  {
+    id: 8,
+    image: photo4,
+    title: 'Mũ Bucket',
+    description: 'Mũ bucket thời trang, phong cách cá tính',
+    rating: 4.5,
+    price: '159.000₫',
+    category: '5',
+  },
+  {
+    id: 9,
+    image: photo4,
+    title: 'Dây Chuyền',
+    description: 'Dây chuyền thời trang, thiết kế tinh tế',
+    rating: 4.7,
+    price: '259.000₫',
+    category: '5',
+  },
+]
 export default function Home() {
   const slides = [photo1, photo2, photo3]
-  const [activeCategory, setActiveCategory] = useState('1')
-  const [isVisible, setIsVisible] = useState(false)
   const [categories, setCategories] = useState(categoriesSample)
+  const [activeCategory, setActiveCategory] = useState(categories[0].id)
+  const [isVisible, setIsVisible] = useState(false)
+  const [visibleProducts, setVisibleProducts] = useState(4)
   const [isLoading, setIsLoading] = useState(false)
-  const [categoryFilter, setCategoryFilter] = useState('1')
+  const [categoryFilter, setCategoryFilter] = useState(categories[0].id)
   const [productList, setProductList] = useState([])
+  const [AllProduct, setAllProduct] = useState([])
 
   // Chuyển đổi định dạng dữ liệu sản phẩm từ API sang định dạng cho ProductCard
   const transformAPIProducts = (products) => {
@@ -65,7 +154,7 @@ export default function Home() {
     setIsLoading(true)
     try {
       const res = await NoAuthApi.getCatergory()
-      console.log('Danh mục: ', res)
+      console.log('Danh mục: ', res.data)
       setCategories(res.data)
       setIsLoading(false)
       return res
@@ -96,109 +185,49 @@ export default function Home() {
       console.log('Có lỗi xảy ra', error)
     }
   }
+  const fetchAllProduct = async () => {
+    setIsLoading(true)
+    try {
+      const res = await NoAuthApi.getProduct()
+      console.log('Tất cả sản phẩm: ', res)
+      setAllProduct(transformAPIProducts(res.data))
+      console.log('All product: ', AllProduct)
+      setIsLoading(false)
+      return res
+    } catch (error) {
+      setIsLoading(false)
+      console.log('Có lỗi xảy ra', error)
+    }
+  }
 
   useEffect(() => {
     setIsVisible(true)
-    fetchCategories()
-    fetchProducts() // Gọi API lấy sản phẩm khi component mount hoặc categoryFilter thay đổi
+    const initCategories = async () => {
+      const result = await fetchCategories()
+      if (result && result.data && result.data.length > 0) {
+        const firstCategory = result.data[0].id
+        setActiveCategory(firstCategory)
+        setCategoryFilter(firstCategory) 
+      }
+    }
+    initCategories()
+    fetchAllProduct()
+  }, [])
+  useEffect(() => {
+    if (categoryFilter) {
+      fetchProducts()
+    }
   }, [categoryFilter])
-
-
-  // Sample product data
-  const sampleProducts = [
-    {
-      id: 1,
-      image: photo4,
-      title: 'Áo Thun Nam Basic',
-      description: 'Áo thun nam chất liệu cotton cao cấp, thoáng mát',
-      rating: 4.5,
-      price: '299.000₫',
-      category: '1',
-      badge: 'BÁN CHẠY',
-      discount: '20%',
-    },
-    {
-      id: 2,
-      image: photo4,
-      title: 'Quần Jeans Nữ',
-      description: 'Quần jeans nữ dáng ôm, co giãn tốt',
-      rating: 4.7,
-      price: '459.000₫',
-      category: '2',
-    },
-    {
-      id: 3,
-      image: photo4,
-      title: 'Áo Khoác Dù Unisex',
-      description: 'Áo khoác dù chống nắng, chống gió, nhẹ và thoáng khí',
-      rating: 4.3,
-      price: '399.000₫',
-      category: '3',
-    },
-    {
-      id: 4,
-      image: photo4,
-      title: 'Áo Polo Nam',
-      description: 'Áo polo nam thiết kế hiện đại, chất liệu cao cấp',
-      rating: 4.7,
-      price: '459.000₫',
-      category: '1',
-    },
-    {
-      id: 5,
-      image: photo4,
-      title: 'Váy Liền Nữ',
-      description: 'Váy liền nữ phong cách thời trang, trẻ trung',
-      rating: 4.7,
-      price: '559.000₫',
-      category: '2',
-    },
-    {
-      id: 6,
-      image: photo4,
-      title: 'Áo Khoác Bomber',
-      description: 'Áo khoác bomber unisex phong cách thể thao',
-      rating: 4.6,
-      price: '699.000₫',
-      category: '3',
-    },
-    {
-      id: 7,
-      image: photo4,
-      title: 'Áo Thun Trẻ Em',
-      description: 'Áo thun trẻ em in họa tiết ngộ nghĩnh',
-      rating: 4.8,
-      price: '199.000₫',
-      category: '4',
-    },
-    {
-      id: 8,
-      image: photo4,
-      title: 'Mũ Bucket',
-      description: 'Mũ bucket thời trang, phong cách cá tính',
-      rating: 4.5,
-      price: '159.000₫',
-      category: '5',
-    },
-    {
-      id: 9,
-      image: photo4,
-      title: 'Dây Chuyền',
-      description: 'Dây chuyền thời trang, thiết kế tinh tế',
-      rating: 4.7,
-      price: '259.000₫',
-      category: '5',
-    },
-  ]
 
   const handleCategoryChange = (key) => {
     setActiveCategory(key)
     setCategoryFilter(key) // Cập nhật categoryFilter để kích hoạt lại useEffect và gọi API
+    setVisibleProducts(4) // Reset số lượng sản phẩm hiển thị khi chuyển danh mục
   }
 
-  // Get products by category
-  const getProductsByCategory = (categoryKey) => {
-    return sampleProducts.filter((product) => product.category === categoryKey)
+  //Handle load more products
+  const handleLoadMore = () => {
+    setVisibleProducts((prev) => prev + 4)
   }
 
   const fadeInUp = {
@@ -290,7 +319,7 @@ export default function Home() {
             >
               {productList.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                  {productList.map((product) => (
+                  {productList.slice(0,visibleProducts).map((product) => (
                     <motion.div key={product.id} variants={fadeInUp}>
                       <ProductCard
                         image={product.image}
@@ -310,6 +339,16 @@ export default function Home() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M20 12H4M8 16l-4-4 4-4M16 16l4-4-4-4" />
                   </svg>
                   <p className="text-xl">Không có sản phẩm trong danh mục này</p>
+                </div>
+              )}
+              {productList.length > visibleProducts && (
+                <div className="flex justify-center mt-8">
+                  <button
+                    onClick={handleLoadMore}
+                    className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition duration-300"
+                  >
+                    Xem thêm sản phẩm
+                  </button>
                 </div>
               )}
             </motion.div>
@@ -369,8 +408,8 @@ export default function Home() {
             variants={stagger}
             viewport={{ once: true, amount: 0.2 }}
             className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-12"
-          >
-            {sampleProducts.map((product) => (
+          > 
+            {AllProduct.map((product) => (
               <motion.div key={product.id} variants={fadeInUp}>
                 <ProductCard
                   image={product.image}

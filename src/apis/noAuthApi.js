@@ -12,10 +12,10 @@ class noAuthApi {
     }
   }
 
-  async getProduct(categoryName) {
+  async getProduct() {
     try {
       const res = await axiosClient.get(
-        `${noAuthEndpoint.getProductsByCategory}?category=${categoryName}`,
+        `${noAuthEndpoint.getAllProducts}`,
       )
       return res.data
     } catch (error) {
