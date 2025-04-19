@@ -1,10 +1,14 @@
 import { motion } from 'framer-motion';
 import React, { useState } from 'react';
 import addcart from '../../../assets/icons/addcart.svg';
+import { useNavigate } from 'react-router-dom';
 
-const ProductCard = ({ image, title, description, rating, price, badge, discount }) => {
+const ProductCard = ({ image, title, description, rating, price, badge, discount, id }) => {
   const [isHovering, setIsHovering] = useState(false);
-
+  const navigate = useNavigate();
+  const handleClick = () => {
+    navigate(`/product/${id}`);
+  }
   return (
     <motion.div
       className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 h-[450px]"
@@ -13,6 +17,7 @@ const ProductCard = ({ image, title, description, rating, price, badge, discount
       animate={{ opacity: 1 }}
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
+      onClick={handleClick}
     >
       {/* Image container with overlay */}
       <div className="relative w-full h-[250px] overflow-hidden">

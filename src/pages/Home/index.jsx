@@ -11,7 +11,6 @@ import ProductCarousel from '../../components/components/ProductCarousel'
 import Carousel from './components/Carousel'
 import ScrollingText from './components/ScrollingText'
 
-import { set } from 'react-hook-form'
 
 const categoriesSample = [
   {
@@ -136,7 +135,7 @@ export default function Home() {
   const transformAPIProducts = (products) => {
     return products.map(product => ({
       id: product.id,
-      image: product.productImage[0].url || photo4, 
+      image: product.productImage[0].url || photo4,
       title: product.productName,
       description: product.desc,
       rating: product.rating || 4, // Giá trị mặc định nếu không có rating
@@ -146,7 +145,7 @@ export default function Home() {
         minimumFractionDigits: 0
       }).format(product.price).replace(/\s/g, ''),
       category: product.category?.id || '',
-      
+
     }));
   }
 
@@ -207,7 +206,7 @@ export default function Home() {
       if (result && result.data && result.data.length > 0) {
         const firstCategory = result.data[0].id
         setActiveCategory(firstCategory)
-        setCategoryFilter(firstCategory) 
+        setCategoryFilter(firstCategory)
       }
     }
     initCategories()
@@ -319,9 +318,10 @@ export default function Home() {
             >
               {productList.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                  {productList.slice(0,visibleProducts).map((product) => (
+                  {productList.slice(0, visibleProducts).map((product) => (
                     <motion.div key={product.id} variants={fadeInUp}>
                       <ProductCard
+                        id={product.id}
                         image={product.image}
                         title={product.title}
                         description={product.description}
@@ -408,10 +408,11 @@ export default function Home() {
             variants={stagger}
             viewport={{ once: true, amount: 0.2 }}
             className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-12"
-          > 
+          >
             {AllProduct.map((product) => (
               <motion.div key={product.id} variants={fadeInUp}>
                 <ProductCard
+                  id={product.id}
                   image={product.image}
                   title={product.title}
                   description={product.description}

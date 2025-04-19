@@ -1,12 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { use, useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import NoAuthApi from '../../apis/noAuthApi';
 import addcart from '../../assets/icons/addcart.svg';
 import photo4 from '../../assets/images/home/san pham.png';
 import ProductCarousel from '../../components/components/ProductCarousel';
 import StarRating from './components/StarRating';
-
+import { set } from 'react-hook-form';
 // Sample product images - replace with your actual images
-const productImages = [
+const productImagesSample = [
     '/src/assets/images/DetailProduct/vay1.avif',
     '/src/assets/images/DetailProduct/vay2.avif',
     '/src/assets/images/DetailProduct/vay3.avif',
@@ -27,7 +28,7 @@ const transformAPIProducts = (apiData) => {
         image: product.productImage && product.productImage.length > 0
             ? product.productImage[0].url
             : photo4,
-        title: product.productName?.substring(0,20) + (product.productName?.length > 20 ? '...' : '') || 'Không có tên sản phẩm',
+        title: product.productName?.substring(0, 20) + (product.productName?.length > 20 ? '...' : '') || 'Không có tên sản phẩm',
         description: product.desc?.substring(0, 100) + (product.desc?.length > 100 ? '...' : '') || 'Không có mô tả',
         // Format price with thousand separators and Vietnamese currency
         price: new Intl.NumberFormat('vi-VN', {
@@ -69,6 +70,15 @@ const sampleReviews = [
     },
 ];
 
+const colorsSample = [
+    { name: 'black', hex: '#000000' },
+    { name: 'white', hex: '#FFFFFF' },
+    { name: 'blue', hex: '#1E90FF' },
+    { name: 'red', hex: '#FF4500' },
+    { name: 'green', hex: '#228B22' },
+];
+const sizeSample = ['XS', 'S', 'M', 'L', 'XL'];
+
 export default function DetailProduct() {
 
     const [selectedImage, setSelectedImage] = useState(0);
@@ -82,21 +92,38 @@ export default function DetailProduct() {
     const [categoryFilter, setCategoryFilter] = useState('áo');
     const [productList, setProductList] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
-    // Available colors with their hex codes
-    const colors = [
-        { name: 'Black', hex: '#000000' },
-        { name: 'White', hex: '#FFFFFF' },
-        { name: 'Blue', hex: '#1E90FF' },
-        { name: 'Red', hex: '#FF4500' },
-        { name: 'Green', hex: '#228B22' },
-    ];
+    const [productName, setProductName] = useState('')
+    const [price, setPrice] = useState(0);
+    const [productImages, setProductImages] = useState(productImagesSample);
+    const [colors, setColors] = useState(colorsSample)
+    const [sizes, setSizes] = useState(sizeSample);
 
-    // Available sizes
-    const sizes = ['XS', 'S', 'M', 'L', 'XL'];
+    const { id } = useParams();
+    
+
 
     // Calculate average rating
     const averageRating = reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length;
 
+    const updateInfoProduct = (res) => {
+        setDescription(res.data.desc)
+        setProductName(res.data.productName)
+        setPrice(new Intl.NumberFormat('vi-VN', {
+            style: 'currency',
+            currency: 'VND',
+            minimumFractionDigits: 0
+        }).format(res.data.price).replace(/\s/g, ''))
+        // setPrice(res.data.price)
+        setProductImages(res.data.productImage.map((item) => item.url))
+
+        //set colors name and hex
+        const colorNames = res.data.colors
+        console.log('colorNames', colorNames)
+        const colorHex = colorsSample.filter((item) => colorNames.includes(item.name))
+        setColors(colorHex)
+        setSizes(res.data.sizes)
+        setCategoryFilter(res.data.categrory.id)
+    }
     //fetch product list by catergories 
     const fetchProducts = async () => {
         setIsLoading(true)
@@ -110,12 +137,34 @@ export default function DetailProduct() {
             console.log('Có lỗi xảy ra', error)
         }
     }
+    const fetchProductDetail = async () => {
+        try {
+            setIsLoading(true)
+            const res = await NoAuthApi.getProductById(id)
+            console.log('product detail', res)
+            updateInfoProduct(res)
+            setIsLoading(false)
+            return res
+        }
+        catch (error) {
+            setIsLoading(false)
+            console.log('Có lỗi xảy ra', error)
+        }
+    }
     useEffect(() => {
         fetchProducts()
     }
         , [categoryFilter])
     // const sampleProducts = transformAPIProducts(productList);
+    useEffect(() => {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+        fetchProductDetail()
 
+    }, [id])
+    
     // Handle form submission
     const handleSubmitReview = (e) => {
         e.preventDefault();
@@ -189,8 +238,8 @@ export default function DetailProduct() {
 
                 {/* Right Column - Product Information */}
                 <div className="w-full md:w-1/2 flex flex-col gap-6 p-2 md:p-10 border rounded-lg">
-                    <h1 className="text-xl md:text-2xl font-bold uppercase tracking-wide">ABSTRACT PRINT SHIRT</h1>
-                    <div className="text-xl md:text-2xl font-semibold text-gray-800">$99</div>
+                    <h1 className="text-xl md:text-2xl font-bold uppercase tracking-wide">{productName}</h1>
+                    <div className="text-xl md:text-2xl font-semibold text-gray-800">{price}</div>
 
                     <div className="text-base text-gray-600 leading-relaxed">
                         <p>Relaxed-fit shirt. Camp collar and short sleeves. Button-up front.</p>

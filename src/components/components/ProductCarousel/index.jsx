@@ -45,6 +45,7 @@ const ProductCarousel = ({ products, title }) => {
           {products.map((product) => (
             <div key={product.id} className="px-2.5 box-border">
               <ProductCard
+                id={product.id}
                 image={product.image}
                 title={product.title}
                 description={product.description}

@@ -32,6 +32,16 @@ class noAuthApi {
       console.log('Có lỗi xảy ra', error)
     }
   }
+  async getProductById(id) {
+    try {
+      const res = await axiosClient.get(
+        `${noAuthEndpoint.getProductById}/${id}`,
+      )
+      return res.data
+    } catch (error) {
+      console.log('Có lỗi xảy ra', error)
+    }
+  }
   
 }
 
