@@ -14,7 +14,7 @@ import ManageOder from './pages/Admin/ManageOder'
 import LayoutForAmin from './components/LayoutForAdmin'
 import ManageProduct from './pages/Admin/ManageProduct'
 import { useState, useEffect } from 'react'
-
+import DetailProduct from './pages/DetailProduct'
 function App() {
   const { loading } = useAuth()
   const [isActive, setActive] = useState(loading)
@@ -32,6 +32,7 @@ function App() {
       <Route path={routes.SIGNUP} element={<SignUp />} />
       <Route element={<DefaultLayout />}>
         <Route path={routes.HOME} element={<Home />} />
+        <Route path={routes.DETAILPRODUCT} element={<DetailProduct />} />
         <Route path={routes.NEWPRODUCTS} element={<NewProducts />} />
         <Route path={routes.TRYON} element={<TryOn />} />
         <Route path={routes.PROFILE} element={<Profile />} />

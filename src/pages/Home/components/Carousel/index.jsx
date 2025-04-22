@@ -23,38 +23,17 @@ export default function Carousel({ slides }) {
   }
 
   return (
-    <div
-      style={{
-        position: 'relative',
-        maxWidth: '1300px',
-        margin: '0 auto',
-        overflow: 'hidden',
-      }}
-    >
+    <div className="relative w-screen m-0 overflow-hidden left-1/2 right-1/2 -ml-[50vw] -mr-[50vw]">
       <div
-        style={{
-          display: 'flex',
-          transition: 'transform 0.5s ease-in-out',
-          transform: `translateX(-${currentSlide * 100}%)`,
-          height: '400px',
-        }}
+        className="flex h-[500px] transition-transform duration-500 ease-in-out"
+        style={{ transform: `translateX(-${currentSlide * 100}%)` }}
       >
         {slides.map((slide, index) => (
-          <div
-            key={index}
-            style={{
-              minWidth: '100%',
-              height: '100%',
-            }}
-          >
+          <div key={index} className="min-w-full h-full">
             <img
               src={slide}
               alt={`Slide ${index + 1}`}
-              style={{
-                width: '100%',
-                height: '100%',
-                objectFit: 'cover',
-              }}
+              className="w-full h-full object-cover"
             />
           </div>
         ))}
@@ -63,66 +42,25 @@ export default function Carousel({ slides }) {
       {/* Navigation buttons */}
       <button
         onClick={prevSlide}
-        style={{
-          position: 'absolute',
-          top: '50%',
-          left: '10px',
-          transform: 'translateY(-50%)',
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
-          color: '#fff',
-          border: 'none',
-          borderRadius: '50%',
-          width: '40px',
-          height: '40px',
-          fontSize: '20px',
-          cursor: 'pointer',
-        }}
+        className="absolute top-1/2 left-5 -translate-y-1/2 bg-black/50 text-white rounded-full w-[50px] h-[50px] text-2xl cursor-pointer z-10"
       >
         &lt;
       </button>
       <button
         onClick={nextSlide}
-        style={{
-          position: 'absolute',
-          top: '50%',
-          right: '10px',
-          transform: 'translateY(-50%)',
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
-          color: '#fff',
-          border: 'none',
-          borderRadius: '50%',
-          width: '40px',
-          height: '40px',
-          fontSize: '20px',
-          cursor: 'pointer',
-        }}
+        className="absolute top-1/2 right-5 -translate-y-1/2 bg-black/50 text-white rounded-full w-[50px] h-[50px] text-2xl cursor-pointer z-10"
       >
         &gt;
       </button>
 
       {/* Indicator dots */}
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-          position: 'absolute',
-          bottom: '10px',
-          width: '100%',
-        }}
-      >
+      <div className="flex justify-center absolute bottom-5 w-full z-10">
         {slides.map((_, index) => (
           <button
             key={index}
             onClick={() => setCurrentSlide(index)}
-            style={{
-              width: '12px',
-              height: '12px',
-              borderRadius: '50%',
-              border: 'none',
-              margin: '0 5px',
-              backgroundColor: currentSlide === index ? '#fff' : 'rgba(255, 255, 255, 0.5)',
-              cursor: 'pointer',
-            }}
+            className={`w-3.5 h-3.5 rounded-full border-none mx-1.5 cursor-pointer ${currentSlide === index ? 'bg-white' : 'bg-white/50'
+              }`}
           />
         ))}
       </div>

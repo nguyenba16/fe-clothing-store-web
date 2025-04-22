@@ -12,16 +12,37 @@ class noAuthApi {
     }
   }
 
-  async getProduct(categoryName) {
+  async getProduct() {
     try {
       const res = await axiosClient.get(
-        `${noAuthEndpoint.getProductsByCategory}?category=${categoryName}`,
+        `${noAuthEndpoint.getAllProducts}`,
       )
       return res.data
     } catch (error) {
       console.log('Có lỗi xảy ra', error)
     }
   }
+  async getCatergory() {
+    try {
+      const res = await axiosClient.get(
+        `${noAuthEndpoint.getCategory}`,
+      )
+      return res.data
+    } catch (error) {
+      console.log('Có lỗi xảy ra', error)
+    }
+  }
+  async getProductById(id) {
+    try {
+      const res = await axiosClient.get(
+        `${noAuthEndpoint.getProductById}/${id}`,
+      )
+      return res.data
+    } catch (error) {
+      console.log('Có lỗi xảy ra', error)
+    }
+  }
+  
 }
 
 const NoAuthApi = new noAuthApi()
