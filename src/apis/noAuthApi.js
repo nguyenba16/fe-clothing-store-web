@@ -14,35 +14,39 @@ class noAuthApi {
 
   async getProduct() {
     try {
-      const res = await axiosClient.get(
-        `${noAuthEndpoint.getAllProducts}`,
-      )
+      const res = await axiosClient.get(`${noAuthEndpoint.getAllProducts}`)
       return res.data
     } catch (error) {
       console.log('Có lỗi xảy ra', error)
     }
   }
+
   async getCatergory() {
     try {
-      const res = await axiosClient.get(
-        `${noAuthEndpoint.getCategory}`,
-      )
+      const res = await axiosClient.get(`${noAuthEndpoint.getCategory}`)
       return res.data
     } catch (error) {
       console.log('Có lỗi xảy ra', error)
     }
   }
+
   async getProductById(id) {
     try {
-      const res = await axiosClient.get(
-        `${noAuthEndpoint.getProductById}/${id}`,
-      )
+      const res = await axiosClient.get(`${noAuthEndpoint.getProductById}/${id}`)
       return res.data
     } catch (error) {
       console.log('Có lỗi xảy ra', error)
     }
   }
-  
+
+  async searchProducts(searchRequest) {
+    try {
+      const res = axiosClient.post(noAuthEndpoint.searchProducts, searchRequest)
+      return res
+    } catch (error) {
+      console.log('Có lỗi xảy ra khi search', error)
+    }
+  }
 }
 
 const NoAuthApi = new noAuthApi()

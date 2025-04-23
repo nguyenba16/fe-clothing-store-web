@@ -7,9 +7,11 @@ import AccountMenu from '../../components/AccountMenu'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCartShopping, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
 import bard from '../../../assets/icons/bard.svg'
-
+import { useNavigate } from 'react-router-dom'
 export default function Header() {
+  const navigate = useNavigate()
   const [scrolled, setScrolled] = useState(false)
+  const [searchValue, setSearchValue] = useState('')
   const { user } = useAuth()
   useEffect(() => {
     const handleScroll = () => {
@@ -20,8 +22,13 @@ export default function Header() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
+  function handleSubmitSearch() {
+    navigate(`${routes.PRODUCT}?name=${searchValue}`)
+    toggleSearch()
+    setSearchValue('')
+  }
+
   const [isSearchOpen, setIsSearchOpen] = useState(false)
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
   const toggleSearch = () => {
     setIsSearchOpen(!isSearchOpen)
   }
@@ -54,7 +61,7 @@ export default function Header() {
 
         <div className='relative group'>
           <NavLink
-            to={routes.PRODUCTCATEGORY}
+            to={`${routes.PRODUCT}?category=all`}
             className={({ isActive }) =>
               `relative font-medium text-[20px] group flex items-center ${isActive ? 'half-underline' : ''}`
             }
@@ -74,19 +81,19 @@ export default function Header() {
             <div className='relative bg-white rounded-md py-2 shadow-lg'></div>
 
             <Link
-              to={`${routes.PRODUCTCATEGORY}/category1`}
+              to={`${routes.PRODUCT}?category=áo`}
               className='block px-4 py-2 text-sm hover:bg-gray-100'
             >
               Áo
             </Link>
             <Link
-              to={`${routes.PRODUCTCATEGORY}/category2`}
+              to={`${routes.PRODUCT}?category=quần`}
               className='block px-4 py-2 text-sm hover:bg-gray-100'
             >
               Quần
             </Link>
             <Link
-              to={`${routes.PRODUCTCATEGORY}/category3`}
+              to={`${routes.PRODUCT}?category=váy`}
               className='block px-4 py-2 text-sm hover:bg-gray-100'
             >
               Váy
@@ -132,14 +139,21 @@ export default function Header() {
               <FontAwesomeIcon icon={faMagnifyingGlass} size='xl' />
             </div>
             {isSearchOpen && (
-              <div className='absolute right-0 top-[35px] bg-white p-2 rounded shadow-lg w-[250px] transition-all duration-300 z-50'>
+              <form
+                onSubmit={(e) => {
+                  handleSubmitSearch()
+                }}
+                className='absolute right-0 top-[35px] bg-white p-2 rounded shadow-lg w-[250px] transition-all duration-300 z-50'
+              >
                 <input
                   type='text'
                   placeholder='Tìm kiếm...'
                   className='w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#A3804D]'
                   autoFocus
+                  onChange={(e) => setSearchValue(e.target.value)}
+                  value={searchValue}
                 />
-              </div>
+              </form>
             )}
           </div>
 
