@@ -15,6 +15,8 @@ import LayoutForAmin from './components/LayoutForAdmin'
 import ManageProduct from './pages/Admin/ManageProduct'
 import { useState, useEffect } from 'react'
 import DetailProduct from './pages/DetailProduct'
+import Products from './pages/Products'
+import ManageOrderUser from './pages/ManageOrderUser'
 function App() {
   const { loading } = useAuth()
   const [isActive, setActive] = useState(loading)
@@ -36,6 +38,8 @@ function App() {
         <Route path={routes.NEWPRODUCTS} element={<NewProducts />} />
         <Route path={routes.TRYON} element={<TryOn />} />
         <Route path={routes.PROFILE} element={<Profile />} />
+        <Route path={routes.PRODUCT} element={<Products />} />
+        <Route path={routes.ORDERTRACKING} element={<ManageOrderUser />} />
       </Route>
       <Route element={<LayoutForAmin />}>
         <Route path={routes.MANAGEORDER} element={<ManageOder />} />

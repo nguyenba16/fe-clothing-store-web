@@ -21,29 +21,29 @@ const ProductCarousel = ({ products, title }) => {
         settings: {
           slidesToShow: 2,
           slidesToScroll: 1,
-        }
+        },
       },
       {
         breakpoint: 640,
         settings: {
           slidesToShow: 1,
           slidesToScroll: 1,
-        }
-      }
-    ]
+        },
+      },
+    ],
   }
 
   return (
-    <div className="py-5 relative">
+    <div className='py-5 relative'>
       {title && (
         <h2 className="text-black text-4xl font-semibold text-center mb-8 font-['Poppins'] tracking-tight">
           {title}
         </h2>
       )}
-      <div className="mx-auto">
-        <Slider {...settings} className="w-full">
+      <div className='mx-auto'>
+        <Slider {...settings} className='w-full'>
           {products.map((product) => (
-            <div key={product.id} className="px-2.5 box-border">
+            <div key={product.id} className='px-2.5 box-border'>
               <ProductCard
                 id={product.id}
                 image={product.image}
@@ -68,10 +68,10 @@ ProductCarousel.propTypes = {
       title: PropTypes.string.isRequired,
       description: PropTypes.string,
       rating: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-      price: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
-    })
+      price: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    }),
   ).isRequired,
-  title: PropTypes.string
+  title: PropTypes.string,
 }
 
 export default memo(ProductCarousel)

@@ -121,7 +121,7 @@ export default function AccountMenu({ user }) {
             Tài khoản của tôi
           </MenuItem>
         </Link>
-        <Link to={routes.ORDER_TRACKING}>
+        <Link to={routes.ORDERTRACKING}>
           <MenuItem onClick={handleClose} sx={{ paddingTop: '8px', paddingBottom: '8px' }}>
             <FontAwesomeIcon icon={faClockRotateLeft} className='mr-2' size='lg' />
             Lịch sử mua hàng
