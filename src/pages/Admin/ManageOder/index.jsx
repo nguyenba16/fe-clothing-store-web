@@ -58,7 +58,7 @@ export default function ManageOder() {
             <option value='paid'>Đã thanh toán</option>
             <option value='delivery'>Đang giao</option>
             <option value='completed'>Hoàn thành</option>
-            <option value='canceled'>Đã hủy</option>
+            <option value='cancel'>Đã hủy</option>
             <option value=''>Tất cả</option>
           </select>
         </div>
