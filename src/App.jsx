@@ -17,6 +17,7 @@ import { useState, useEffect } from 'react'
 import DetailProduct from './pages/DetailProduct'
 import Products from './pages/Products'
 import ManageOrderUser from './pages/ManageOrderUser'
+import Cart from './pages/Cart'
 function App() {
   const { loading } = useAuth()
   const [isActive, setActive] = useState(loading)
@@ -40,6 +41,7 @@ function App() {
         <Route path={routes.PROFILE} element={<Profile />} />
         <Route path={routes.PRODUCT} element={<Products />} />
         <Route path={routes.ORDERTRACKING} element={<ManageOrderUser />} />
+        <Route path={routes.CART} element={<Cart />} />
       </Route>
       <Route element={<LayoutForAmin />}>
         <Route path={routes.MANAGEORDER} element={<ManageOder />} />
