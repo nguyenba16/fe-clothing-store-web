@@ -1,6 +1,7 @@
 import { Outlet } from 'react-router-dom'
 import Footer from '../components/layouts/Footer'
 import Header from '../components/layouts/Header'
+import ChatBox from '../components/layouts/ChatBox'
 
 export default function DefaultLayout() {
   return (
@@ -9,6 +10,7 @@ export default function DefaultLayout() {
       <main>
         <Outlet />
       </main>
+      <ChatBox />
       <Footer />
     </div>
   )

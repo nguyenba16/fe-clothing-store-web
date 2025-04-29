@@ -9,7 +9,6 @@ import { routes } from './routes'
 import LoadingOverlay from 'react-loading-overlay-ts'
 import useAuth from './stores/useAuth'
 import Profile from './pages/Profile'
-import Dashboard from './pages/Admin/Dashboard'
 import ManageOder from './pages/Admin/ManageOder'
 import LayoutForAmin from './components/LayoutForAdmin'
 import ManageProduct from './pages/Admin/ManageProduct'
@@ -17,6 +16,8 @@ import { useState, useEffect } from 'react'
 import DetailProduct from './pages/DetailProduct'
 import Products from './pages/Products'
 import ManageOrderUser from './pages/ManageOrderUser'
+import ResetPassword from './pages/ResetPassword'
+
 function App() {
   const { loading } = useAuth()
   const [isActive, setActive] = useState(loading)
@@ -32,6 +33,7 @@ function App() {
     <Routes>
       <Route path={routes.SIGNIN} element={<SignIn />} />
       <Route path={routes.SIGNUP} element={<SignUp />} />
+      <Route path={routes.RESETPASSWORD} element={<ResetPassword />} />
       <Route element={<DefaultLayout />}>
         <Route path={routes.HOME} element={<Home />} />
         <Route path={routes.DETAILPRODUCT} element={<DetailProduct />} />
