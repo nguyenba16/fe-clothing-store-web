@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { FaMinus, FaPlus, FaTrash } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-// import { useAuth } from '../../stores/useAuth';
+import useAuth from '../../stores/useAuth';
 
 //sample cart data
 const sampleCartData = [
@@ -84,7 +84,9 @@ const Cart = () => {
     const [cartItems, setCartItems] = useState(sampleCartData);
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
-    const { isAuthenticated } = true;
+    const {user} = useAuth();
+    const isAuthenticated = !!user; // Kiểm tra xem người dùng đã đăng nhập hay chưa
+
 
     // Lấy dữ liệu giỏ hàng từ localStorage khi component mount
     useEffect(() => {
@@ -140,7 +142,7 @@ const Cart = () => {
 
         // Chuyển đến trang thanh toán hoặc xử lý thanh toán ở đây
         toast.info('Đang chuyển đến trang thanh toán...');
-        // navigate('/checkout'); // Nếu có trang thanh toán
+        navigate('/checkout'); // Nếu có trang thanh toán
     };
 
     // Xử lý trường hợp giỏ hàng trống
