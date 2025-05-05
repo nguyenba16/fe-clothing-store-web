@@ -1,24 +1,16 @@
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import DeleteIcon from '@mui/icons-material/Delete';
-import PaymentIcon from '@mui/icons-material/Payment';
 import SendIcon from '@mui/icons-material/Send';
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import {
   Box,
   Button,
-  Card,
-  CardActionArea,
-  CardActions,
-  CardContent,
-  CardMedia,
   CircularProgress,
   Divider,
-  Grid,
+  Grid2,
   IconButton,
   Paper,
   TextField,
-  ToggleButton,
-  ToggleButtonGroup,
+
   Typography
 } from '@mui/material';
 import { motion } from 'framer-motion';
@@ -26,6 +18,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import NoAuthApi from '../../apis/noAuthApi';
 import ProductCard from '../../components/components/ProductCard';
+import TryOnCard from './component/tryoncard';
 
 export default function TryOn() {
   const [userImage, setUserImage] = useState(null);
@@ -314,20 +307,20 @@ export default function TryOn() {
 
   return (
     <div className="max-w-7xl mx-auto p-4 md:p-6">
-      <Typography variant="h4" component="h1" align="center" gutterBottom className="font-bold uppercase tracking-wide mb-8 text-third underline">
+      {/* <Typography variant="h4" component="h1" align="center" gutterBottom className="font-bold uppercase tracking-wide mb-8 text-third underline">
         Thử Đồ Ảo Với AI
-      </Typography>
+      </Typography> */}
 
       {/* Main content area */}
-      <Grid container spacing={4}>
+      <Grid2 container spacing={4}>
         {/* Left column: Upload and result */}
-        <Grid item xs={12} md={8}>
-          <Grid container spacing={3}>
+        <Grid2 item size={{ xs: 18, md: 8 }}>
+          <Grid2 container spacing={3}>
             {/* Upload area */}
-            <Grid item xs={12} md={6}>
+            <Grid2 item size={{ xs: 12, md: 6 }}>
               <Paper
                 elevation={3}
-                className="h-[400px] flex flex-col items-center justify-center p-4 relative"
+                className="h-[500px] flex flex-col items-center justify-center p-4 relative"
               >
                 {userImage ? (
                   <Box className="relative w-full h-full">
@@ -369,13 +362,13 @@ export default function TryOn() {
               <Typography variant="subtitle1" align="center" className="mt-2 font-medium">
                 Ảnh của bạn
               </Typography>
-            </Grid>
+            </Grid2>
 
             {/* Result area */}
-            <Grid item xs={12} md={6}>
+            <Grid2 item size={{ xs: 12, md: 6 }}>
               <Paper
                 elevation={3}
-                className="h-[400px] flex flex-col items-center justify-center p-4 relative"
+                className="h-[500px] flex flex-col items-center justify-center p-4 relative"
               >
                 {isProcessing ? (
                   <Box className="flex flex-col items-center">
@@ -406,8 +399,8 @@ export default function TryOn() {
               <Typography variant="subtitle1" align="center" className="mt-2 font-medium">
                 Kết quả thử đồ
               </Typography>
-            </Grid>
-          </Grid>
+            </Grid2>
+          </Grid2>
 
           {/* Chat area */}
           <Paper elevation={3} className="mt-8 p-4 h-[300px] flex flex-col">
@@ -472,10 +465,10 @@ export default function TryOn() {
               </Button>
             </Box>
           </Paper>
-        </Grid>
+        </Grid2>
 
         {/* Right column: Product selection */}
-        <Grid item xs={12} md={4}>
+        <Grid2 item size={{ xs: 12, md: 4 }}>
           <Paper elevation={3} className="p-4">
             <Typography variant="h6" gutterBottom>
               Chọn sản phẩm để thử
@@ -488,94 +481,24 @@ export default function TryOn() {
               </Box>
             ) : (
               <div className="max-h-[800px] overflow-auto pr-2">
-                <Grid container spacing={2}>
+                <Grid2 container spacing={2}>
                   {products.map((product) => (
-                    <Grid item xs={12} key={product.id}>
-                      <Card
-                        className={`transition-all ${selectedProduct?.id === product.id ? 'border-2 border-blue-500' : ''
-                          }`}
+                    <Grid2 item size={{ xs: 4, md: 12 }} key={product.id}>
+                      <TryOnCard
+                        item={product}
                         onClick={() => handleProductSelect(product)}
-                      >
-                        <CardActionArea className="flex items-start p-2">
-                          <CardMedia
-                            component="img"
-                            className="w-20 h-24 object-cover"
-                            image={product.image}
-                            alt={product.title}
-                          />
-                          <CardContent className="flex-1 p-2">
-                            <Typography variant="subtitle1" className="font-medium line-clamp-1">
-                              {product.title}
-                            </Typography>
-                            <Typography variant="body2" color="textSecondary" className="line-clamp-2 text-sm">
-                              {product.description}
-                            </Typography>
-                            <Typography variant="subtitle2" color="primary" className="mt-1">
-                              {product.price}
-                            </Typography>
-                          </CardContent>
-                        </CardActionArea>
-                        <CardActions className="flex justify-between p-2">
-                          <Button
-                            size="small"
-                            variant="outlined"
-                            startIcon={<ShoppingCartIcon />}
-                            onClick={(e) => handleAddToCart(e, product)}
-                            className="text-xs"
-                          >
-                            Thêm vào giỏ
-                          </Button>
-                          <Button
-                            size="small"
-                            variant="contained"
-                            color="primary"
-                            startIcon={<PaymentIcon />}
-                            onClick={(e) => handleBuyNow(e, product)}
-                            className="text-xs"
-                          >
-                            Mua ngay
-                          </Button>
-                        </CardActions>
-                      </Card>
-                      {selectedProduct?.id === product.id && (
-                        <Box className="mt-2">
-                          <Typography variant="subtitle2" gutterBottom>
-                            Chọn màu sắc:
-                          </Typography>
-                          <ToggleButtonGroup
-                            value={selectedColor?.hex}
-                            exclusive
-                            onChange={(e, hex) => {
-                              const color = getAvailableColors(product.id).find(c => c.hex === hex);
-                              handleColorSelect(product.id, color);
-                            }}
-                          >
-                            {getAvailableColors(product.id).map((color) => (
-                              <ToggleButton
-                                key={color.hex}
-                                value={color.hex}
-                                style={{
-                                  backgroundColor: color.hex,
-                                  color: color.hex === '#FFFFFF' ? '#000' : '#FFF',
-                                  border: '1px solid #CCC',
-                                  width: '40px',
-                                  height: '40px',
-                                }}
-                              >
-                                {color.name}
-                              </ToggleButton>
-                            ))}
-                          </ToggleButtonGroup>
-                        </Box>
-                      )}
-                    </Grid>
+                        selectedProduct={selectedProduct}
+                        selectedColor={selectedColor}
+                        onColorSelect={handleColorSelect}
+                      />
+                    </Grid2>
                   ))}
-                </Grid>
+                </Grid2>
               </div>
             )}
           </Paper>
-        </Grid>
-      </Grid>
+        </Grid2>
+      </Grid2>
 
       {/* Product recommendations */}
       <Box className="mt-12">
