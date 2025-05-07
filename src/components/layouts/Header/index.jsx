@@ -33,6 +33,29 @@ export default function Header() {
     setIsSearchOpen(!isSearchOpen)
   }
 
+  // Add this near the other state declarations
+  const [cartItemsCount, setCartItemsCount] = useState(0)
+  
+  // Add this effect to fetch cart items count from localStorage or a state management store
+  useEffect(() => {
+    // Example implementation - replace with your actual cart data source
+    const getCartItems = () => {
+      try {
+        const cart = JSON.parse(localStorage.getItem('cart')) || [];
+        setCartItemsCount(cart.length);
+      } catch (error) {
+        console.error("Error getting cart items:", error);
+        setCartItemsCount(0);
+      }
+    };
+    
+    getCartItems();
+    // Set up event listener for cart changes if needed
+    window.addEventListener('storage', getCartItems);
+    
+    return () => window.removeEventListener('storage', getCartItems);
+  }, []);
+
   return (
     <div
       className={`bg-white w-full h-[100px] flex items-center px-[50px] justify-between sticky top-0 z-50
@@ -159,6 +182,11 @@ export default function Header() {
 
           <Link to={routes.CART} className='relative flex items-center justify-center group'>
             <FontAwesomeIcon icon={faCartShopping} color='black' size='xl' />
+            {cartItemsCount > 0 && (
+              <div className='absolute -top-2 -right-2 bg-red-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold'>
+                {cartItemsCount}
+              </div>
+            )}
           </Link>
         </div>
 

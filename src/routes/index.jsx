@@ -13,4 +13,6 @@ export const routes = {
   MANAGEORDER: '/admin/manage-order',
   MANAGEPRODUCT: '/admin/manage-product',
   DETAILPRODUCT: '/product/:id',
+  CART: '/cart',
+  CHECKOUT: '/checkout',
 }
