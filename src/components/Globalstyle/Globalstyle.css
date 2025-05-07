@@ -46,3 +46,35 @@ body {
 .custom-slider .slick-slide {
   padding: 0 10px;
 }
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+@keyframes flash {
+  0%,
+  20% {
+    opacity: 0;
+  }
+  30%,
+  100% {
+    opacity: 1;
+  }
+}
+
+.dot-flash {
+  animation: flash 1.4s infinite steps(2);
+}
+
+.dot-flash.delay-1 {
+  animation-delay: 0.3s;
+}
+
+.dot-flash.delay-2 {
+  animation-delay: 0.6s;
+}
