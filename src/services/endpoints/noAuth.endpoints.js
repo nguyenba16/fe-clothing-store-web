@@ -5,5 +5,7 @@ const noAuthEndpoint = {
   getCategory: '/no-auth/categories',
   getProductById: '/no-auth/products/detail',
   searchProducts: '/no-auth/products/search',
+  sendVerifyCode: '/no-auth/forgot-password',
+  changePassword: '/no-auth/change-password',
 }
 export default noAuthEndpoint

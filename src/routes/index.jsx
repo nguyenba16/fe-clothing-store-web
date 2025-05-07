@@ -5,6 +5,7 @@ export const routes = {
   SIGNIN: '/signin',
   SIGNUP: '/signup',
   TRYON: '/try-on',
+  RESETPASSWORD: '/reset-password',
   PRODUCT: '/product',
   PROFILE: '/profile',
   ORDERTRACKING: '/manage-order',

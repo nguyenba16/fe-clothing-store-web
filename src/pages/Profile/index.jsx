@@ -5,9 +5,10 @@ import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 import { useState } from 'react'
+import SaveIcon from '@mui/icons-material/Save'
 import userApi from '../../apis/userApi'
 import { toast } from 'react-toastify'
-import { ClipLoader } from 'react-spinners'
+
 const schema = yup.object().shape({
   email: yup.string().email('Email không hợp lệ').required('Vui lòng nhập email'),
   name: yup.string().required('Vui lòng nhập trường này'),
@@ -40,8 +41,8 @@ export default function Profile() {
   })
   const [imageFile, setImageFile] = useState(null)
   const [avatarFile, setAvatarFile] = useState(null)
-  const [image, setImage] = useState(user.imageBody.url)
-  const [avatar, setAvatar] = useState(user.avatar.url)
+  const [image, setImage] = useState(user.imageBody?.url || null)
+  const [avatar, setAvatar] = useState(user.avatar?.url)
   const handleImageChange = (e) => {
     const file = e.target.files[0]
     if (file) {
@@ -90,22 +91,6 @@ export default function Profile() {
     }
   }
 
-  if (loading == true) {
-    return (
-      <div className='flex flex-col gap-3 justify-center items-center h-screen'>
-        <ClipLoader
-          color='#A3804A'
-          loading={loading}
-          size={70}
-          cssOverride={{
-            borderWidth: '6px',
-          }}
-        />
-        <p className='text-center text-primary'>Đang tải...</p>
-      </div>
-    )
-  }
-
   return (
     <div className='px-[200px] flex flex-col mb-10 mt-10 justify-center'>
       <h1 className='text-[50px] font-bold text-primary'>Tài khoản của tôi</h1>
@@ -152,10 +137,14 @@ export default function Profile() {
         <Button
           type='submit'
           form='update-form'
+          color='secondary'
+          loading={loading}
+          loadingPosition='start'
+          startIcon={<SaveIcon />}
           variant='contained'
           sx={{ backgroundColor: 'green', height: '50px', width: '150px' }}
         >
-          Lưu thay đổi
+          Lưu
         </Button>
       </div>
       <div className='w-full mt-10 border border-[#acacac] border-dashed'></div>

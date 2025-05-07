@@ -47,6 +47,31 @@ class noAuthApi {
       console.log('Có lỗi xảy ra khi search', error)
     }
   }
+
+  async sendVerifyCode(email) {
+    const req = {
+      email: email,
+    }
+    try {
+      const res = await axiosClient.post(noAuthEndpoint.sendVerifyCode, req)
+      return res.data
+    } catch (error) {
+      console.log('Có lỗi xảy ra khi gửi mã', error)
+    }
+  }
+  async changePassword(email, code, newPass) {
+    const req = {
+      email: email,
+      code: code,
+      newPassword: newPass,
+    }
+    try {
+      const res = await axiosClient.post(noAuthEndpoint.changePassword, req)
+      return res.data
+    } catch (error) {
+      console.log('Có lỗi xảy ra khi đổi pass', error)
+    }
+  }
 }
 
 const NoAuthApi = new noAuthApi()

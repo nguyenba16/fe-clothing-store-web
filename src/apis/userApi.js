@@ -68,6 +68,26 @@ class UserApi {
       throw new Error('Có lỗi update profile dùng xảy ra')
     }
   }
+
+  async getOrderList(status) {
+    try {
+      const res = await axiosClient.get(`${userEndpoints.getOrderList}?status=${status}`)
+      return res.data
+    } catch (error) {
+      console.log('Có lỗi khi lấy các đơn hàng:', error)
+      throw new Error('Có lỗi update profile dùng xảy ra', error)
+    }
+  }
+
+  async cancelOrder(id) {
+    try {
+      const res = await axiosClient.post(`${userEndpoints.cancelOrder}/${id}`)
+      return res.data
+    } catch (error) {
+      console.log('Có lỗi khi hủy đơn hàng:', error)
+      throw new Error('Có lỗi khi hủy đơn hàng', error)
+    }
+  }
 }
 
 const userApi = new UserApi()

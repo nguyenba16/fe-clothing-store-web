@@ -4,7 +4,6 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
-import { useState } from 'react'
 import authApi from '../../apis/authApi'
 import { toast } from 'react-toastify'
 import { routes } from '../../routes'
@@ -53,7 +52,7 @@ export default function SignIn() {
       style={{ backgroundImage: `url(${image})` }}
       className='w-[100vw] h-[100vh] flex items-center justify-end px-[15vw]'
     >
-      <div className='w-[30vw] bg-[#fff] rounded-3xl px-10 py-16 flex flex-col '>
+      <div className='w-[30vw] bg-[#fff] rounded-3xl px-10 py-10 flex flex-col '>
         <h1 className='text-center font-bold text-[40px] uppercase text-primary'>Đăng nhập</h1>
         <p className='mt-3 text-center'>Hãy nhập đầy đủ thông tin bên dưới!</p>
         <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col gap-6 mt-10'>
@@ -100,7 +99,10 @@ export default function SignIn() {
             Đăng nhập
           </Button>
         </form>
-        <p className='text-right mt-3'>
+        <Link to={routes.RESETPASSWORD} className='text-right mt-3 mb-5 underline'>
+          Quên mật khẩu?
+        </Link>
+        <p className='text-center mt-3'>
           Bạn chưa có tài khoản?{' '}
           <Link to='/signup' className='font-bold'>
             Đăng kí ngay
