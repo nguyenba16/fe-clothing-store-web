@@ -23,9 +23,9 @@ export default function Carousel({ slides }) {
   }
 
   return (
-    <div className='relative w-screen m-0 overflow-hidden left-1/2 right-1/2 -ml-[50vw] -mr-[50vw]'>
+    <div className='relative w-full m-0 overflow-hidden left-1/2 right-1/2 -ml-[50vw] -mr-[50vw]'>
       <div
-        className='flex h-[500px] transition-transform duration-500 ease-in-out'
+        className='flex h-[550px] transition-transform duration-500 ease-in-out'
         style={{ transform: `translateX(-${currentSlide * 100}%)` }}
       >
         {slides.map((slide, index) => (

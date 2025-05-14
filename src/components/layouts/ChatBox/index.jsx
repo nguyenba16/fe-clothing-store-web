@@ -44,14 +44,14 @@ export default function ChatBox() {
     <div className={`overscroll-x-auto fixed bottom-3 right-3 z-50`}>
       <div
         onClick={() => setIsOpenChatbox(true)}
-        className={`px-4 py-2 bg-primary text-white rounded-full text-[18px] ${isOpenChatbox ? 'hidden' : ''}`}
+        className={`px-4 py-2 bg-[#000] text-white rounded-full text-[18px] ${isOpenChatbox ? 'hidden' : ''}`}
       >
         Mở ChatBox
       </div>
       {isOpenChatbox ? (
         <div className='overflow-hidden w-[25vw] h-[65vh] bg-[#f1f1f1] rounded-xl inset-shadow-sm shadow-xl relative'>
-          <div className='flex justify-between items-center h-[13%] bg-primary p-4 rounded-t-xl w-[25vw] shadow-lg absolute  top-0'>
-            <p className='text-[#fff] font-bold text-[20px]'>Trợ lí LaTu</p>
+          <div className='flex justify-between items-center h-[13%] bg-[#000000] p-4 rounded-t-xl w-[25vw] shadow-lg absolute  top-0'>
+            <p className='text-[#fff] font-bold text-[20px]'>Trợ lí Từ Từ</p>
             <button onClick={() => setIsOpenChatbox(false)}>
               <FontAwesomeIcon icon={faXmark} color='white' size='xl' />
             </button>

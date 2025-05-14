@@ -9,6 +9,7 @@ const ProductCard = ({ image, title, description, rating, price, badge, discount
   const handleClick = () => {
     navigate(`/product/${id}`)
   }
+  console.log('====asd=sa=d===', title)
   return (
     <motion.div
       className='bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 h-[450px]'

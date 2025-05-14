@@ -30,17 +30,17 @@ export default function Products() {
   const [productList, setProductList] = useState([])
   const [category, setCategory] = useState('all')
   const [searchValue, setSearchValue] = useState('')
-  const [rating, setRating] = useState(1)
+  const [rating, setRating] = useState(0)
   const [sortPrice, setSortPrice] = useState('asc')
   const [currentPage, setCurrentPage] = useState(1)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [searchRequest, setSearchRequest] = useState({
     productName: '',
     category: 'all',
-    rating: 1,
+    rating: 0,
     sortPrice: 'asc',
     currentPage: 1,
-    limmitItems: 4,
+    limmitItems: 16,
   })
   const [pagination, setPagination] = useState([])
 

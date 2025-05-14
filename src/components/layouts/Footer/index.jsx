@@ -11,20 +11,26 @@ export default function Footer() {
   }
 
   return (
-    <div className='bg-primary items-center px-[15px] sm:px-[30px] md:px-[50px] py-[40px] relative min-h-[400px] md:h-[610px]'>
+    <div className='bg-primary items-center px-[15px] sm:px-[30px] md:px-[50px] py-[40px] relative min-h-[400px] md:h-[610px] w-full'>
       <div className='flex flex-col md:flex-row gap-8 pt-[50px] md:pt-[100px] w-full justify-between'>
         <div className='flex justify-center md:justify-start'>
           <Link to={routes.HOME} onClick={ClickOnTop}>
-            <img src={logo} alt='Logo Website' className='w-[50vw] md:w-[20vw] bg-white rounded-lg px-5' />
+            <img
+              src={logo}
+              alt='Logo Website'
+              className='w-[50vw] md:w-[20vw] bg-white rounded-lg px-5'
+            />
           </Link>
         </div>
 
-        <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 w-full md:w-auto'>
+        <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 w-full md:w-auto'>
           <div>
             <div className='text-white text-[20px] md:text-[25px] mb-3 font-bold'>Liên hệ</div>
             <ul>
               <li className='text-white text-[14px] md:text-[15px]'>SĐT: 0338963327</li>
-              <li className='text-white text-[14px] md:text-[15px]'>Email: support.elegante@gmail.com</li>
+              <li className='text-white text-[14px] md:text-[15px]'>
+                Email: support.elegante@gmail.com
+              </li>
               <li className='text-white text-[14px] md:text-[15px]'>
                 Địa chỉ: Linh Trung, Tp. Thủ Đức, Tp. Hồ Chí Minh
               </li>
@@ -45,7 +51,7 @@ export default function Footer() {
               </li>
               <li>
                 <NavLink
-                  to={routes.COMMIT}
+                  to={routes.OURCOMMIT}
                   className='text-white text-[14px] md:text-[15px] hover:text-[#FFF671]'
                   onClick={ClickOnTop}
                 >
@@ -60,7 +66,7 @@ export default function Footer() {
             <ul>
               <li>
                 <NavLink
-                  to={routes.OPERATING_POLICY}
+                  to={routes.OPERATINGPOLICY}
                   className='text-white text-[14px] md:text-[15px] hover:text-[#FFF671]'
                   onClick={ClickOnTop}
                 >
@@ -69,7 +75,7 @@ export default function Footer() {
               </li>
               <li>
                 <NavLink
-                  to={routes.POLICIES_REGULATIONS}
+                  to={routes.POLICIESANDREGULATION}
                   className='text-white text-[14px] md:text-[15px] hover:text-[#FFF671]'
                   onClick={ClickOnTop}
                 >
@@ -84,16 +90,16 @@ export default function Footer() {
             <ul>
               <li>
                 <NavLink
-                  to={routes.BOOKING_GUIDE}
+                  to={routes.ORDERINGGUIDE}
                   className='text-white text-[14px] md:text-[15px] hover:text-[#FFF671]'
                   onClick={ClickOnTop}
                 >
-                  Hướng dẫn hàng
+                  Hướng dẫn đặt hàng
                 </NavLink>
               </li>
               <li>
                 <NavLink
-                  to={routes.CONTACT_INSTRUCTIONS}
+                  to={routes.CONTACTGUIDE}
                   className='text-white text-[14px] md:text-[15px] hover:text-[#FFF671]'
                   onClick={ClickOnTop}
                 >
@@ -109,10 +115,10 @@ export default function Footer() {
       <div className='pb-[120px] sm:pb-[150px]'></div>
 
       {/* Footer bottom */}
-      <div className='border border-white border-dashed absolute bottom-[80px] sm:bottom-[100px] w-[90%] sm:w-[93%] left-1/2 -translate-x-1/2'></div>
-      <div className='absolute bottom-[30px] sm:bottom-[45px] text-white text-[14px] md:text-[15px] w-full text-center md:text-left md:pl-[50px]'>
+      <div className='border border-white border-dashed w-full'></div>
+      <p className='sm:bottom-[45px] text-white text-[14px] md:text-[15px] w-full text-left mt-10'>
         © 2025 - Bản quyền thuộc Élégante
-      </div>
+      </p>
     </div>
   )
 }

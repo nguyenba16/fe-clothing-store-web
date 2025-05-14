@@ -19,6 +19,12 @@ import ManageOrderUser from './pages/ManageOrderUser'
 import Cart from './pages/Cart'
 import Checkout from './pages/Checkout'
 import ResetPassword from './pages/ResetPassword'
+import OurCommit from './pages/OurCommitNew'
+import PolicyAndRegulations from './pages/PolicyAndRegulations'
+import OrderInstructions from './pages/OrderInstructionsNew'
+import OperatingPolicy from './pages/OperatingPolicyNew'
+import ContactInstructions from './pages/ContactInstructionsNew'
+
 function App() {
   const { loading } = useAuth()
   const [isActive, setActive] = useState(loading)
@@ -45,6 +51,11 @@ function App() {
         <Route path={routes.ORDERTRACKING} element={<ManageOrderUser />} />
         <Route path={routes.CART} element={<Cart />} />
         <Route path={routes.CHECKOUT} element={<Checkout />} />
+        <Route path={routes.OURCOMMIT} element={<OurCommit />} />
+        <Route path={routes.OPERATINGPOLICY} element={<OperatingPolicy />} />
+        <Route path={routes.POLICIESANDREGULATION} element={<PolicyAndRegulations />} />
+        <Route path={routes.ORDERINGGUIDE} element={<OrderInstructions />} />
+        <Route path={routes.CONTACTGUIDE} element={<ContactInstructions />} />
       </Route>
       <Route element={<LayoutForAmin />}>
         <Route path={routes.MANAGEORDER} element={<ManageOder />} />
