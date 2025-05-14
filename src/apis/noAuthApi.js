@@ -41,10 +41,19 @@ class noAuthApi {
 
   async searchProducts(searchRequest) {
     try {
-      const res = axiosClient.post(noAuthEndpoint.searchProducts, searchRequest)
+      const res = await axiosClient.post(noAuthEndpoint.searchProducts, searchRequest)
       return res
     } catch (error) {
       console.log('Có lỗi xảy ra khi search', error)
+    }
+  }
+
+  async getOutstadingProduct() {
+    try {
+      const res = await axiosClient.get(noAuthEndpoint.getOutstadingProduct)
+      return res.data
+    } catch (error) {
+      console.log('Có lỗi xảy ra khi slấy product nổi bật', error)
     }
   }
 

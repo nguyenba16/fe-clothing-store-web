@@ -2,15 +2,20 @@ import { Tabs } from 'antd'
 import { motion } from 'framer-motion'
 import React, { useEffect, useState } from 'react'
 import NoAuthApi from '../../apis/noAuthApi'
-import photo1 from '../../assets/images/home/cover1.jpg'
+import photo1 from '../../assets/images/home/cover6.jpg'
 import photo2 from '../../assets/images/home/cover2.jpg'
 import photo3 from '../../assets/images/home/cover3.jpg'
+import photo5 from '../../assets/images/home/cover4.jpg'
 import photo4 from '../../assets/images/home/san pham.png'
 import ProductCard from '../../components/components/ProductCard'
 import ProductCarousel from '../../components/components/ProductCarousel'
 import Carousel from './components/Carousel'
 import ScrollingText from './components/ScrollingText'
-
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faBoxOpen, faCreditCard, faHeadset, faRightLeft } from '@fortawesome/free-solid-svg-icons'
+import { useNavigate } from 'react-router-dom'
+import summerBanner from '../../assets/images/home/summnerbanner.png'
+import LoadingComponent from '../../components/components/LoadingComponent'
 const categoriesSample = [
   {
     id: '1',
@@ -19,18 +24,6 @@ const categoriesSample = [
   {
     id: '2',
     categroryName: 'ÁO',
-  },
-  {
-    id: '3',
-    categroryName: 'ĐỒ LÓT',
-  },
-  {
-    id: '4',
-    categroryName: 'ÁO KHOÁC',
-  },
-  {
-    id: '5',
-    categroryName: 'Phụ kiện',
   },
 ]
 // Sample product data
@@ -119,8 +112,10 @@ const sampleProducts = [
     category: '5',
   },
 ]
+
 export default function Home() {
-  const slides = [photo1, photo2, photo3]
+  const navigate = useNavigate()
+  const slides = [photo1, photo2, photo3, photo5]
   const [categories, setCategories] = useState(categoriesSample)
   const [activeCategory, setActiveCategory] = useState(categories[0].id)
   const [isVisible, setIsVisible] = useState(false)
@@ -128,7 +123,7 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(false)
   const [categoryFilter, setCategoryFilter] = useState(categories[0].id)
   const [productList, setProductList] = useState([])
-  const [AllProduct, setAllProduct] = useState([])
+  const [outstadingProducts, setOutstadingProduct] = useState([])
 
   // Chuyển đổi định dạng dữ liệu sản phẩm từ API sang định dạng cho ProductCard
   const transformAPIProducts = (products) => {
@@ -147,6 +142,18 @@ export default function Home() {
         .replace(/\s/g, ''),
       category: product.category?.id || '',
     }))
+  }
+
+  const fetchOutstadingProduct = async () => {
+    setIsLoading(true)
+    try {
+      const res = await NoAuthApi.getOutstadingProduct()
+      setOutstadingProduct(transformAPIProducts(res.data))
+    } catch (error) {
+      console.log('Lỗi lấy danh mục: ', error)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const fetchCategories = async () => {
@@ -184,20 +191,6 @@ export default function Home() {
       console.log('Có lỗi xảy ra', error)
     }
   }
-  const fetchAllProduct = async () => {
-    setIsLoading(true)
-    try {
-      const res = await NoAuthApi.getProduct()
-      console.log('Tất cả sản phẩm: ', res)
-      setAllProduct(transformAPIProducts(res.data))
-      console.log('All product: ', AllProduct)
-      setIsLoading(false)
-      return res
-    } catch (error) {
-      setIsLoading(false)
-      console.log('Có lỗi xảy ra', error)
-    }
-  }
 
   useEffect(() => {
     setIsVisible(true)
@@ -210,8 +203,9 @@ export default function Home() {
       }
     }
     initCategories()
-    fetchAllProduct()
+    fetchOutstadingProduct()
   }, [])
+
   useEffect(() => {
     if (categoryFilter) {
       fetchProducts()
@@ -224,11 +218,6 @@ export default function Home() {
     setVisibleProducts(4) // Reset số lượng sản phẩm hiển thị khi chuyển danh mục
   }
 
-  //Handle load more products
-  const handleLoadMore = () => {
-    setVisibleProducts((prev) => prev + 4)
-  }
-
   const fadeInUp = {
     hidden: { opacity: 0, y: 20 },
     visible: { opacity: 1, y: 0 },
@@ -238,6 +227,9 @@ export default function Home() {
     visible: { transition: { staggerChildren: 0.1 } },
   }
 
+  if (isLoading) {
+    return <LoadingComponent />
+  }
   return (
     <div className='min-h-screen bg-gradient-to-b from-white to-gray-50 '>
       {/* Hero Section with Carousel */}
@@ -248,11 +240,14 @@ export default function Home() {
             initial={{ opacity: 0, y: -50 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5, duration: 0.8 }}
-            className='text-center p-6 rounded-lg bg-black/50 backdrop-blur-sm max-w-md'
+            className='text-center py-10 px-5 rounded-lg bg-black/50 backdrop-blur-sm h-[30vh]'
           >
-            <h1 className='text-white text-4xl md:text-5xl font-bold mb-4'>SUMMER COLLECTION</h1>
+            <h1 className='text-white text-4xl md:text-5xl font-bold mb-4'>OUR COLLECTION</h1>
             <p className='text-gray-100 mb-6'>Khám phá xu hướng thời trang mới nhất</p>
-            <button className='bg-white text-black px-8 py-3 rounded-full font-semibold hover:bg-black hover:text-white transition duration-300 transform hover:scale-105'>
+            <button
+              className='bg-white text-black px-8 py-3 rounded-full font-semibold hover:bg-black hover:text-white transition duration-300 transform hover:scale-105'
+              onClick={() => navigate('/product?category=all')}
+            >
               MUA NGAY
             </button>
           </motion.div>
@@ -279,16 +274,46 @@ export default function Home() {
             </h2>
             <div className='w-24 h-1 bg-red-500 mx-auto'></div>
           </motion.div>
-          <ProductCarousel products={sampleProducts} title='' />
+          <ProductCarousel products={outstadingProducts} dot={true} />
         </div>
 
+        <div className='grid grid-cols-4 gap-4 border-t-2 border-b-2 border-[#a0a0a0] py-8 mt-10 mb-8'>
+          <div className='flex gap-2 justify-center items-center'>
+            <FontAwesomeIcon icon={faBoxOpen} size='4x' />
+            <div className='h-[50px] flex flex-col justify-between'>
+              <p className='font-bold'>Miễn phí vận chuyển</p>
+              <p className='text-[12px] italic'>Áp dụng cho mọi đơn hàng từ 500k</p>
+            </div>
+          </div>
+          <div className='flex gap-4 justify-center items-center'>
+            <FontAwesomeIcon icon={faRightLeft} size='4x' />
+            <div className='h-[50px] flex flex-col justify-between'>
+              <p className='font-bold'>Dễ dàng đổi trả</p>
+              <p className='text-[12px] italic'>Có thể đổi/trả khi hàng không như hình</p>
+            </div>
+          </div>
+          <div className='flex gap-4 justify-center items-center'>
+            <FontAwesomeIcon icon={faHeadset} size='4x' />
+            <div className='h-[50px] flex flex-col justify-between'>
+              <p className='font-bold'>Hỗ trợ nhanh chóng</p>
+              <p className='text-[12px] italic'>HOTLINE 24/7: 033396333</p>
+            </div>
+          </div>
+          <div className='flex gap-4 justify-center items-center'>
+            <FontAwesomeIcon icon={faCreditCard} size='4x' />
+            <div className='h-[50px] flex flex-col justify-between'>
+              <p className='font-bold'>Thanh toán đa dạng</p>
+              <p className='text-[12px] italic'>Hỗ trợ thanh toán bằng cách chuyển khoản</p>
+            </div>
+          </div>
+        </div>
         {/* Categories Section */}
         <div className='py-16 px-4 md:px-8 bg-gray-50'>
           <motion.h2
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 1 }}
-            className='text-3xl md:text-5xl font-bold text-center mb-12'
+            className='text-3xl md:text-5xl font-bold text-center mb-3'
           >
             DANH MỤC <span className='text-blue-600'>SẢN PHẨM</span>
           </motion.h2>
@@ -298,7 +323,7 @@ export default function Home() {
               items={categories.map((cat) => ({
                 key: cat.id,
                 label: (
-                  <div className='flex items-center gap-2 px-3 py-2'>
+                  <div className='flex items-center gap-2 px-3 py-2 uppercase font-bold'>
                     <span>{cat.categroryName}</span>
                   </div>
                 ),
@@ -318,7 +343,7 @@ export default function Home() {
             >
               {productList.length > 0 ? (
                 <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6'>
-                  {productList.slice(0, visibleProducts).map((product) => (
+                  {productList.slice(0, 8).map((product) => (
                     <motion.div key={product.id} variants={fadeInUp}>
                       <ProductCard
                         id={product.id}
@@ -352,22 +377,12 @@ export default function Home() {
                   <p className='text-xl'>Không có sản phẩm trong danh mục này</p>
                 </div>
               )}
-              {productList.length > visibleProducts && (
-                <div className='flex justify-center mt-8'>
-                  <button
-                    onClick={handleLoadMore}
-                    className='bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition duration-300'
-                  >
-                    Xem thêm sản phẩm
-                  </button>
-                </div>
-              )}
             </motion.div>
           </div>
         </div>
-
+        <img src={summerBanner} alt='Summer Banner' className='w-[95%] mx-auto' />
         {/* Featured Collections */}
-        <div className='py-16 px-4 md:px-8'>
+        <div className='py-10 px-4 md:px-8 mt-10'>
           <motion.h2
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -376,12 +391,12 @@ export default function Home() {
           >
             BỘ SƯU TẬP <span className='text-indigo-600'>NỔI BẬT</span>
           </motion.h2>
-          <p className='text-gray-600 text-center mb-12 max-w-2xl mx-auto'>
+          <p className='text-gray-600 text-center mb-6 max-w-2xl mx-auto'>
             Khám phá bộ sưu tập mới nhất của chúng tôi với các thiết kế độc quyền và chất lượng cao
             cấp
           </p>
 
-          <div className='grid grid-cols-1 md:grid-cols-2 gap-8 mb-16'>
+          <div className='grid grid-cols-1 md:grid-cols-2 gap-8 mb-5'>
             <motion.div
               whileHover={{ scale: 1.02 }}
               className='relative rounded-xl overflow-hidden group'
@@ -411,79 +426,6 @@ export default function Home() {
                 <button className='bg-white text-black px-5 py-2 rounded-full'>Xem ngay</button>
               </div>
             </motion.div>
-          </div>
-
-          {/* All Products Section */}
-          <motion.h2
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className='text-3xl md:text-5xl font-bold text-center mb-12'
-          >
-            TẤT CẢ <span className='text-emerald-600'>SẢN PHẨM</span>
-          </motion.h2>
-
-          <motion.div
-            initial='hidden'
-            whileInView='visible'
-            variants={stagger}
-            viewport={{ once: true, amount: 0.2 }}
-            className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-12'
-          >
-            {AllProduct.map((product) => (
-              <motion.div key={product.id} variants={fadeInUp}>
-                <ProductCard
-                  id={product.id}
-                  image={product.image}
-                  title={product.title}
-                  description={product.description}
-                  rating={product.rating}
-                  price={product.price}
-                  badge={product.badge}
-                  discount={product.discount}
-                />
-              </motion.div>
-            ))}
-          </motion.div>
-
-          <div className='text-center'>
-            <button className='inline-flex items-center bg-black text-white px-8 py-3 rounded-full hover:bg-gray-800 transition duration-300'>
-              Xem thêm sản phẩm
-              <svg
-                xmlns='http://www.w3.org/2000/svg'
-                className='h-5 w-5 ml-2'
-                viewBox='0 0 20 20'
-                fill='currentColor'
-              >
-                <path
-                  fillRule='evenodd'
-                  d='M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z'
-                  clipRule='evenodd'
-                />
-              </svg>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Newsletter Section */}
-      <div className='py-16 px-4 md:px-8 bg-gray-100'>
-        <div className='max-w-4xl mx-auto bg-white p-8 md:p-12 rounded-2xl shadow-lg'>
-          <h3 className='text-2xl md:text-3xl font-bold text-center mb-6'>
-            Đăng ký nhận thông tin
-          </h3>
-          <p className='text-gray-600 text-center mb-8'>
-            Hãy đăng ký để nhận thông tin về các sản phẩm mới, khuyến mãi hấp dẫn và các sự kiện đặc
-            biệt
-          </p>
-          <div className='flex flex-col md:flex-row gap-4'>
-            <input
-              type='email'
-              placeholder='Email của bạn'
-              className='flex-1 border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-black'
-            />
-            <button className='bg-black text-white px-6 py-3 rounded-lg font-medium hover:bg-gray-800 transition duration-300'>
-              Đăng ký ngay
-            </button>
           </div>
         </div>
       </div>

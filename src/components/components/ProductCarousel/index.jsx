@@ -5,9 +5,9 @@ import 'slick-carousel/slick/slick-theme.css'
 import 'slick-carousel/slick/slick.css'
 import ProductCard from '../ProductCard'
 
-const ProductCarousel = ({ products, title }) => {
+const ProductCarousel = ({ products, dot }) => {
   const settings = {
-    dots: true,
+    dots: dot,
     infinite: products.length > 3,
     speed: 500,
     slidesToShow: 3,
@@ -32,14 +32,14 @@ const ProductCarousel = ({ products, title }) => {
       },
     ],
   }
-
+  console.log('====asd=sa=d===', products)
   return (
-    <div className='py-5 relative'>
-      {title && (
+    <div>
+      {/* {title && (
         <h2 className="text-black text-4xl font-semibold text-center mb-8 font-['Poppins'] tracking-tight">
           {title}
         </h2>
-      )}
+      )} */}
       <div className='mx-auto'>
         <Slider {...settings} className='w-full'>
           {products.map((product) => (
