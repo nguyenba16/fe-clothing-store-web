@@ -1,11 +1,12 @@
+import { faFileImport, faPlus } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { TablePagination } from '@mui/material'
 import { useEffect, useState } from 'react'
 import NoAuthApi from '../../../apis/noAuthApi'
-import RowProduct from './components/RowProduct'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPlus } from '@fortawesome/free-solid-svg-icons'
-import PopupAddProduct from './components/PopupAddProduct'
 import LoadingComponent from '../../../components/components/LoadingComponent'
+import PopupAddProduct from './components/PopupAddProduct'
+import RowProduct from './components/RowProduct'
+import PopupImportProduct from './components/PopupImportProduct'
 
 export default function ManageProduct() {
   const [isloading, setIsLoading] = useState(false)
@@ -15,6 +16,8 @@ export default function ManageProduct() {
   const [rowsPerPage, setRowsPerPage] = useState(5)
   const [loading, setLoading] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false)
+
   const handleChangeCategoryFilter = (event) => setCategoryFilter(event.target.value)
   const handleChangePage = (_, newPage) => setSkipPage(newPage)
   const handleChangeRowsPerPage = (event) => {
@@ -35,6 +38,10 @@ export default function ManageProduct() {
   }
   const handleOpenModal = () => setIsModalOpen(true)
   const onCloseModal = () => setIsModalOpen(false)
+
+  const handleOpenImportModal = () => setIsImportModalOpen(true)
+  const onCloseImportModal = () => setIsImportModalOpen(false)
+
 
   useEffect(() => {
     fetchProducts()
@@ -67,18 +74,34 @@ export default function ManageProduct() {
               <option value=''>Tất cả</option>
             </select>
           </div>
-          <button
-            onClick={handleOpenModal}
-            className='flex justify-center items-center rounded-3xl gap-2 p-2 bg-blue-800'
-          >
-            <FontAwesomeIcon
-              icon={faPlus}
-              size='lg'
-              color='black'
-              className='w-[20px] h-[20px] p-2 bg-white rounded-full'
-            />
-            <p className='text-white'>Thêm sản phẩm</p>
-          </button>
+
+          <div className='flex gap-5'>
+            <button
+              onClick={handleOpenImportModal}
+              className='flex justify-center items-center rounded-3xl gap-2 p-2 bg-green-700'
+            >
+              <FontAwesomeIcon
+                icon={faFileImport}
+                size='lg'
+                color='black'
+                className='w-[20px] h-[20px] p-2 bg-white rounded-full'
+              />
+              <p className='text-white'>Nhập từ file</p>
+
+            </button>
+            <button
+              onClick={handleOpenModal}
+              className='flex justify-center items-center rounded-3xl gap-2 p-2 bg-blue-800'
+            >
+              <FontAwesomeIcon
+                icon={faPlus}
+                size='lg'
+                color='black'
+                className='w-[20px] h-[20px] p-2 bg-white rounded-full'
+              />
+              <p className='text-white'>Thêm sản phẩm</p>
+            </button>
+          </div>
         </div>
 
         <table className='w-full border-collapse border border-[#D5D5D5]'>
@@ -147,6 +170,7 @@ export default function ManageProduct() {
         </div>
       </div>
       <PopupAddProduct isOpen={isModalOpen} onClose={onCloseModal} fetchProducts={fetchProducts} />
+      <PopupImportProduct isOpen={isImportModalOpen} onClose={onCloseImportModal} fetchProducts={fetchProducts} />
     </div>
   )
 }
