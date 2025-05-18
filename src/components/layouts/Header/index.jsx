@@ -35,26 +35,26 @@ export default function Header() {
 
   // Add this near the other state declarations
   const [cartItemsCount, setCartItemsCount] = useState(0)
-  
+
   // Add this effect to fetch cart items count from localStorage or a state management store
   useEffect(() => {
     // Example implementation - replace with your actual cart data source
     const getCartItems = () => {
       try {
-        const cart = JSON.parse(localStorage.getItem('cart')) || [];
-        setCartItemsCount(cart.length);
+        const cart = JSON.parse(localStorage.getItem('cart')) || []
+        setCartItemsCount(cart.length)
       } catch (error) {
-        console.error("Error getting cart items:", error);
-        setCartItemsCount(0);
+        console.error('Error getting cart items:', error)
+        setCartItemsCount(0)
       }
-    };
-    
-    getCartItems();
+    }
+
+    getCartItems()
     // Set up event listener for cart changes if needed
-    window.addEventListener('storage', getCartItems);
-    
-    return () => window.removeEventListener('storage', getCartItems);
-  }, []);
+    window.addEventListener('storage', getCartItems)
+
+    return () => window.removeEventListener('storage', getCartItems)
+  }, [])
 
   return (
     <div
@@ -124,7 +124,7 @@ export default function Header() {
           </div>
         </div>
         <NavLink
-          to={routes.NEWPRODUCTS}
+          to={routes.CONTACTUS}
           className={({ isActive }) =>
             `relative font-medium text-[20px] group ${isActive ? 'half-underline' : ''}`
           }
@@ -132,7 +132,7 @@ export default function Header() {
             color: isActive ? '#A3804D' : 'black',
           })}
         >
-          Hàng mới
+          Liên hệ
           <span className='absolute left-1/4 bottom-0 w-1/2 h-[2px] bg-black scale-x-0 group-hover:scale-x-100 transition-transform duration-300'></span>
         </NavLink>
 

@@ -212,14 +212,14 @@ export default function DetailProduct() {
   const handleAddToCart = () => {
     // Validate color and size selection
     if (selectedColor === null) {
-      alert('Vui lòng chọn màu sắc');
-      return;
+      alert('Vui lòng chọn màu sắc')
+      return
     }
     if (selectedSize === null) {
-      alert('Vui lòng chọn kích thước');
-      return;
+      alert('Vui lòng chọn kích thước')
+      return
     }
-    
+
     // Create cart item
     const cartItem = {
       id: id,
@@ -228,31 +228,30 @@ export default function DetailProduct() {
       quantity: 1,
       color: colors[selectedColor].name,
       size: sizes[selectedSize],
-      image: productImages[0]
-    };
-    
+      image: productImages[0],
+    }
+
     // Get existing cart from localStorage
-    const existingCart = JSON.parse(localStorage.getItem('cart')) || [];
-    
+    const existingCart = JSON.parse(localStorage.getItem('cart')) || []
+
     // Check if item already exists in cart (same product, color, size)
-    const existingItemIndex = existingCart.findIndex(item => 
-      item.id === cartItem.id && 
-      item.color === cartItem.color && 
-      item.size === cartItem.size
-    );
-    
+    const existingItemIndex = existingCart.findIndex(
+      (item) =>
+        item.id === cartItem.id && item.color === cartItem.color && item.size === cartItem.size,
+    )
+
     if (existingItemIndex !== -1) {
       // Update quantity if item exists
-      existingCart[existingItemIndex].quantity += 1;
+      existingCart[existingItemIndex].quantity += 1
     } else {
       // Add new item if it doesn't exist
-      existingCart.push(cartItem);
+      existingCart.push(cartItem)
     }
-    
+
     // Save updated cart to localStorage
-    localStorage.setItem('cart', JSON.stringify(existingCart));
-    
-    alert('Đã thêm vào giỏ hàng');
+    localStorage.setItem('cart', JSON.stringify(existingCart))
+
+    alert('Đã thêm vào giỏ hàng')
   }
   // Handle buy now
   const handleBuyNow = () => {

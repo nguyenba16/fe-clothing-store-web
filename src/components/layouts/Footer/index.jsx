@@ -15,7 +15,11 @@ export default function Footer() {
       <div className='flex flex-col md:flex-row gap-8 pt-[50px] md:pt-[100px] w-full justify-between'>
         <div className='flex justify-center md:justify-start'>
           <Link to={routes.HOME} onClick={ClickOnTop}>
-            <img src={logo} alt='Logo Website' className='w-[50vw] md:w-[20vw] bg-white rounded-lg px-5' />
+            <img
+              src={logo}
+              alt='Logo Website'
+              className='w-[50vw] md:w-[20vw] bg-white rounded-lg px-5'
+            />
           </Link>
         </div>
 
@@ -24,7 +28,9 @@ export default function Footer() {
             <div className='text-white text-[20px] md:text-[25px] mb-3 font-bold'>Liên hệ</div>
             <ul>
               <li className='text-white text-[14px] md:text-[15px]'>SĐT: 0338963327</li>
-              <li className='text-white text-[14px] md:text-[15px]'>Email: support.elegante@gmail.com</li>
+              <li className='text-white text-[14px] md:text-[15px]'>
+                Email: support.elegante@gmail.com
+              </li>
               <li className='text-white text-[14px] md:text-[15px]'>
                 Địa chỉ: Linh Trung, Tp. Thủ Đức, Tp. Hồ Chí Minh
               </li>
