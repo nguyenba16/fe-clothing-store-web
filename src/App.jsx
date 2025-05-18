@@ -19,7 +19,6 @@ import ManageOrderUser from './pages/ManageOrderUser'
 import Cart from './pages/Cart'
 import Checkout from './pages/Checkout'
 import ResetPassword from './pages/ResetPassword'
-import ContactUs from './pages/AboutUs'
 function App() {
   const { loading } = useAuth()
   const [isActive, setActive] = useState(loading)
@@ -46,7 +45,6 @@ function App() {
         <Route path={routes.ORDERTRACKING} element={<ManageOrderUser />} />
         <Route path={routes.CART} element={<Cart />} />
         <Route path={routes.CHECKOUT} element={<Checkout />} />
-        <Route path={routes.CONTACTUS} element={<ContactUs />} />
       </Route>
       <Route element={<LayoutForAmin />}>
         <Route path={routes.MANAGEORDER} element={<ManageOder />} />

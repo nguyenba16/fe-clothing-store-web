@@ -15,4 +15,9 @@ export const routes = {
   DETAILPRODUCT: '/product/:id',
   CART: '/cart',
   CHECKOUT: '/checkout',
+  OURCOMMIT: '/our-commit',
+  OPERATINGPOLICY: '/operating-policy',
+  POLICIESANDREGULATION: '/policies-regulation',
+  ORDERINGGUIDE: '/odering-instruction',
+  CONTACTGUIDE: '/contact-instruction',
 }

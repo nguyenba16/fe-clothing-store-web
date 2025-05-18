@@ -513,7 +513,7 @@ export default function DetailProduct() {
         <div className='text-xl md:text-2xl font-bold uppercase tracking-wide underline text-third'>
           SẢN PHẨM CÙNG LOẠI
         </div>
-        <ProductCarousel products={productList} />
+        <ProductCarousel products={productList} dot={false} />
       </div>
     </div>
   )
