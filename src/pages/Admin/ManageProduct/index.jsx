@@ -42,7 +42,6 @@ export default function ManageProduct() {
   const handleOpenImportModal = () => setIsImportModalOpen(true)
   const onCloseImportModal = () => setIsImportModalOpen(false)
 
-
   useEffect(() => {
     fetchProducts()
   }, [categoryFilter])
@@ -87,7 +86,6 @@ export default function ManageProduct() {
                 className='w-[20px] h-[20px] p-2 bg-white rounded-full'
               />
               <p className='text-white'>Nhập từ file</p>
-
             </button>
             <button
               onClick={handleOpenModal}
@@ -170,7 +168,11 @@ export default function ManageProduct() {
         </div>
       </div>
       <PopupAddProduct isOpen={isModalOpen} onClose={onCloseModal} fetchProducts={fetchProducts} />
-      <PopupImportProduct isOpen={isImportModalOpen} onClose={onCloseImportModal} fetchProducts={fetchProducts} />
+      <PopupImportProduct
+        isOpen={isImportModalOpen}
+        onClose={onCloseImportModal}
+        fetchProducts={fetchProducts}
+      />
     </div>
   )
 }

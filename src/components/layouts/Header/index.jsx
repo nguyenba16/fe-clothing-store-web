@@ -124,7 +124,7 @@ export default function Header() {
           </div>
         </div>
         <NavLink
-          to={routes.NEWPRODUCTS}
+          to={routes.CONTACTUS}
           className={({ isActive }) =>
             `relative font-medium text-[20px] group ${isActive ? 'half-underline' : ''}`
           }
@@ -132,7 +132,7 @@ export default function Header() {
             color: isActive ? '#A3804D' : 'black',
           })}
         >
-          Hàng mới
+          Liên hệ
           <span className='absolute left-1/4 bottom-0 w-1/2 h-[2px] bg-black scale-x-0 group-hover:scale-x-100 transition-transform duration-300'></span>
         </NavLink>
 
