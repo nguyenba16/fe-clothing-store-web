@@ -8,11 +8,37 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCartShopping, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
 import bard from '../../../assets/icons/bard.svg'
 import { useNavigate } from 'react-router-dom'
+import cartApi from '../../../apis/cartApi'
+
 export default function Header() {
   const navigate = useNavigate()
   const [scrolled, setScrolled] = useState(false)
   const [searchValue, setSearchValue] = useState('')
   const { user } = useAuth()
+  const [cartItemsCount, setCartItemsCount] = useState(0)
+
+  // Function to fetch cart items count
+  const fetchCartItemsCount = async () => {
+    if (user) {
+      try {
+        const cart = await cartApi.getCart()
+        if (cart && cart.data && cart.data.items) {
+          // Count unique variants (different color/size combinations)
+          let uniqueVariantsCount = 0
+          Object.values(cart.data.items).forEach((variants) => {
+            uniqueVariantsCount += Object.keys(variants).length
+          })
+          setCartItemsCount(uniqueVariantsCount)
+        }
+      } catch (error) {
+        console.error('Error fetching cart:', error)
+        setCartItemsCount(0)
+      }
+    } else {
+      setCartItemsCount(0)
+    }
+  }
+
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 0)
@@ -21,6 +47,25 @@ export default function Header() {
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
+
+  // Fetch cart items count when user is logged in
+  useEffect(() => {
+    fetchCartItemsCount()
+  }, [user])
+
+  // Listen for cart changes
+  useEffect(() => {
+    const handleCartChange = () => {
+      fetchCartItemsCount()
+    }
+
+    // Add event listener for custom cart change event
+    window.addEventListener('cartChanged', handleCartChange)
+
+    return () => {
+      window.removeEventListener('cartChanged', handleCartChange)
+    }
+  }, [user])
 
   function handleSubmitSearch() {
     navigate(`${routes.PRODUCT}?name=${searchValue}`)
@@ -32,29 +77,6 @@ export default function Header() {
   const toggleSearch = () => {
     setIsSearchOpen(!isSearchOpen)
   }
-
-  // Add this near the other state declarations
-  const [cartItemsCount, setCartItemsCount] = useState(0)
-
-  // Add this effect to fetch cart items count from localStorage or a state management store
-  useEffect(() => {
-    // Example implementation - replace with your actual cart data source
-    const getCartItems = () => {
-      try {
-        const cart = JSON.parse(localStorage.getItem('cart')) || []
-        setCartItemsCount(cart.length)
-      } catch (error) {
-        console.error('Error getting cart items:', error)
-        setCartItemsCount(0)
-      }
-    }
-
-    getCartItems()
-    // Set up event listener for cart changes if needed
-    window.addEventListener('storage', getCartItems)
-
-    return () => window.removeEventListener('storage', getCartItems)
-  }, [])
 
   return (
     <div
@@ -124,7 +146,7 @@ export default function Header() {
           </div>
         </div>
         <NavLink
-          to={routes.CONTACTUS}
+          to={routes.ABOUTUS}
           className={({ isActive }) =>
             `relative font-medium text-[20px] group ${isActive ? 'half-underline' : ''}`
           }
@@ -132,7 +154,7 @@ export default function Header() {
             color: isActive ? '#A3804D' : 'black',
           })}
         >
-          Liên hệ
+          Về chúng tôi
           <span className='absolute left-1/4 bottom-0 w-1/2 h-[2px] bg-black scale-x-0 group-hover:scale-x-100 transition-transform duration-300'></span>
         </NavLink>
 
@@ -180,14 +202,16 @@ export default function Header() {
             )}
           </div>
 
-          <Link to={routes.CART} className='relative flex items-center justify-center group'>
-            <FontAwesomeIcon icon={faCartShopping} color='black' size='xl' />
-            {cartItemsCount > 0 && (
-              <div className='absolute -top-2 -right-2 bg-red-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold'>
-                {cartItemsCount}
-              </div>
-            )}
-          </Link>
+          {user && (
+            <Link to={routes.CART} className='relative flex items-center justify-center group'>
+              <FontAwesomeIcon icon={faCartShopping} color='black' size='xl' />
+              {cartItemsCount > 0 && (
+                <div className='absolute -top-2 -right-2 bg-red-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold'>
+                  {cartItemsCount}
+                </div>
+              )}
+            </Link>
+          )}
         </div>
 
         <div>|</div>

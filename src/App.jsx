@@ -18,7 +18,7 @@ import ManageOrderUser from './pages/ManageOrderUser'
 import Cart from './pages/Cart'
 import Checkout from './pages/Checkout'
 import ResetPassword from './pages/ResetPassword'
-import ContactUs from './pages/ContactUs'
+import AboutUs from './pages/AboutUs'
 import OurCommit from './pages/OurCommitNew'
 import PolicyAndRegulations from './pages/PolicyAndRegulations'
 import OrderInstructions from './pages/OrderInstructionsNew'
@@ -43,7 +43,7 @@ function App() {
       <Route element={<DefaultLayout />}>
         <Route path={routes.HOME} element={<Home />} />
         <Route path={routes.DETAILPRODUCT} element={<DetailProduct />} />
-        <Route path={routes.CONTACTUS} element={<ContactUs />} />
+        <Route path={routes.ABOUTUS} element={<AboutUs />} />
         <Route path={routes.TRYON} element={<TryOn />} />
         <Route path={routes.PROFILE} element={<Profile />} />
         <Route path={routes.PRODUCT} element={<Products />} />
