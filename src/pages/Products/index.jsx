@@ -48,7 +48,7 @@ export default function Products() {
     setIsLoading(true)
     try {
       const res = await NoAuthApi.searchProducts(searchRequest)
-      setProductList(res.data.data.products)
+      setProductList(transformAPIProducts(res.data.data.products))
       setPagination(res.data.data.pagination)
     } catch (error) {
       console.log('Lỗi search ', error)
@@ -56,7 +56,24 @@ export default function Products() {
       setIsLoading(false)
     }
   }
-
+  // Chuyển đổi định dạng dữ liệu sản phẩm từ API sang định dạng cho ProductCard
+  const transformAPIProducts = (products) => {
+    return products.map((product) => ({
+      id: product.id,
+      image: product.productImage[0].url || photo4,
+      title: product.productName,
+      description: product.desc,
+      rating: product.rating || 4.5, // Giá trị mặc định nếu không có rating
+      price: new Intl.NumberFormat('vi-VN', {
+        style: 'currency',
+        currency: 'VND',
+        minimumFractionDigits: 0,
+      })
+        .format(product.price)
+        .replace(/\s/g, ''),
+      category: product.category?.id || '',
+    }))
+  }
   const handleChangePage = (event, value) => {
     setCurrentPage(value)
     setSearchRequest((prev) => ({ ...prev, currentPage: value }))
@@ -181,9 +198,9 @@ export default function Products() {
             {productList.map((item) => (
               <ProductCard
                 key={item.id}
-                image={item.productImage[0].url}
-                title={item.productName}
-                description={item.desc}
+                image={item.image}
+                title={item.title}
+                description={item.description}
                 rating={item.rating}
                 price={item.price}
                 id={item.id}
