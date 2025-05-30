@@ -132,7 +132,7 @@ export default function Home() {
       image: product.productImage[0].url || photo4,
       title: product.productName,
       description: product.desc,
-      rating: product.rating || 4, // Giá trị mặc định nếu không có rating
+      rating: product.rating || 4.5, // Giá trị mặc định nếu không có rating
       price: new Intl.NumberFormat('vi-VN', {
         style: 'currency',
         currency: 'VND',
@@ -178,7 +178,7 @@ export default function Home() {
 
   //fetch product list by catergories
   const fetchProducts = async () => {
-    setIsLoading(true)
+    // setIsLoading(true)
     try {
       const categoryName = getCategoryName(categoryFilter)
       const res = await NoAuthApi.getProductByCategory(categoryName)

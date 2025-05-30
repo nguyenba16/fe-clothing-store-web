@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react'
 import { FaArrowLeft } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
+import cartApi from '../../apis/cartApi'
+import NoAuthApi from '../../apis/noAuthApi'
 
 const Checkout = () => {
   const navigate = useNavigate()
@@ -37,34 +39,92 @@ const Checkout = () => {
   const paymentMethods = [
     { id: 'cod', name: 'Thanh toán khi nhận hàng (COD)', icon: '💵' },
     { id: 'bank', name: 'Chuyển khoản ngân hàng', icon: '🏦' },
-    { id: 'momo', name: 'Ví điện tử MoMo', icon: '💳' },
-    { id: 'vnpay', name: 'VN Pay', icon: '💳' },
+    {
+      id: 'momo',
+      name: 'Ví điện tử MoMo',
+      icon: 'https://upload.wikimedia.org/wikipedia/vi/f/fe/MoMo_Logo.png',
+    },
+    {
+      id: 'vnpay',
+      name: 'VNPAY',
+      icon: 'https://vinadesign.vn/uploads/thumbnails/800/2023/05/vnpay-logo-vinadesign-25-12-59-16.jpg',
+    },
   ]
+
+  // Transform cart items from API format to display format
+  const transformCartItems = async (cartData) => {
+    if (!cartData || !cartData.data || !cartData.data.items) return []
+
+    const items = []
+    const cartItems = cartData.data.items
+
+    // Iterate through each product in the cart
+    for (const [productId, variants] of Object.entries(cartItems)) {
+      try {
+        // Fetch product details
+        const productDetails = await NoAuthApi.getProductById(productId)
+
+        // Iterate through each variant (size_color) of the product
+        for (const [variant, quantity] of Object.entries(variants)) {
+          // Split variant into size and color
+          const [size, color] = variant.split('_')
+
+          // Create item object with product details
+          items.push({
+            productId,
+            size,
+            color,
+            quantity,
+            name: productDetails.data.productName,
+            price: productDetails.data.price,
+            image:
+              productDetails.data.productImage.find((img) => img.color === color)?.url ||
+              '/src/assets/images/home/san pham.png',
+          })
+        }
+      } catch (error) {
+        console.error(`Error fetching product details for ${productId}:`, error)
+        // Add item with default values if product details fetch fails
+        for (const [variant, quantity] of Object.entries(variants)) {
+          const [size, color] = variant.split('_')
+          items.push({
+            productId,
+            size,
+            color,
+            quantity,
+            name: 'Product Name',
+            price: 0,
+            image: '/src/assets/images/home/san pham.png',
+          })
+        }
+      }
+    }
+
+    return items
+  }
 
   // Lấy dữ liệu giỏ hàng khi component mount
   useEffect(() => {
-    const storedCart = localStorage.getItem('cart')
-    if (storedCart) {
-      setCartItems(JSON.parse(storedCart))
-    } else {
-      // Nếu không có giỏ hàng, chuyển về trang giỏ hàng
-      toast.info('Giỏ hàng của bạn đang trống')
-      navigate('/cart')
+    const fetchCart = async () => {
+      try {
+        const cart = await cartApi.getCart()
+        const transformedItems = await transformCartItems(cart)
+        setCartItems(transformedItems)
+
+        if (transformedItems.length === 0) {
+          toast.info('Giỏ hàng của bạn đang trống')
+          navigate('/cart')
+        }
+      } catch (error) {
+        console.error('Error fetching cart:', error)
+        toast.error('Không thể tải giỏ hàng')
+        navigate('/cart')
+      } finally {
+        setLoading(false)
+      }
     }
 
-    // Lấy thông tin người dùng từ localStorage nếu có
-    const userInfo = localStorage.getItem('userInfo')
-    if (userInfo) {
-      const parsedInfo = JSON.parse(userInfo)
-      setFormData((prevData) => ({
-        ...prevData,
-        fullName: parsedInfo.fullName || '',
-        email: parsedInfo.email || '',
-        phone: parsedInfo.phone || '',
-      }))
-    }
-
-    setLoading(false)
+    fetchCart()
   }, [navigate])
 
   // Xử lý thay đổi form
@@ -289,7 +349,11 @@ const Checkout = () => {
                         className='mr-3 h-4 w-4'
                       />
                       <label htmlFor={method.id} className='flex items-center cursor-pointer'>
-                        <span className='mr-2'>{method.icon}</span>
+                        {method.id === 'momo' || method.id === 'vnpay' ? (
+                          <img src={method.icon} alt={method.name} className='h-6 w-auto mr-2' />
+                        ) : (
+                          <span className='mr-2'>{method.icon}</span>
+                        )}
                         {method.name}
                       </label>
                     </div>

@@ -1,7 +1,6 @@
 import { Route, Routes } from 'react-router-dom'
 import DefaultLayout from './layouts/DefaultLayout'
 import Home from './pages/Home'
-import NewProducts from './pages/NewProduct'
 import TryOn from './pages/TryOn'
 import SignIn from './pages/Signin'
 import SignUp from './pages/SignUp'
@@ -19,12 +18,12 @@ import ManageOrderUser from './pages/ManageOrderUser'
 import Cart from './pages/Cart'
 import Checkout from './pages/Checkout'
 import ResetPassword from './pages/ResetPassword'
+import AboutUs from './pages/AboutUs'
 import OurCommit from './pages/OurCommitNew'
 import PolicyAndRegulations from './pages/PolicyAndRegulations'
 import OrderInstructions from './pages/OrderInstructionsNew'
 import OperatingPolicy from './pages/OperatingPolicyNew'
 import ContactInstructions from './pages/ContactInstructionsNew'
-
 function App() {
   const { loading } = useAuth()
   const [isActive, setActive] = useState(loading)
@@ -44,7 +43,7 @@ function App() {
       <Route element={<DefaultLayout />}>
         <Route path={routes.HOME} element={<Home />} />
         <Route path={routes.DETAILPRODUCT} element={<DetailProduct />} />
-        <Route path={routes.NEWPRODUCTS} element={<NewProducts />} />
+        <Route path={routes.ABOUTUS} element={<AboutUs />} />
         <Route path={routes.TRYON} element={<TryOn />} />
         <Route path={routes.PROFILE} element={<Profile />} />
         <Route path={routes.PRODUCT} element={<Products />} />
