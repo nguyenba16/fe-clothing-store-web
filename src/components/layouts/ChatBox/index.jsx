@@ -6,6 +6,7 @@ import ChatBoxApi from '../../../apis/chatboxApi'
 import useAuth from '../../../stores/useAuth'
 import { Avatar } from 'antd'
 import { toast } from 'react-toastify'
+import ReactMarkdown from 'react-markdown'
 
 export default function ChatBox() {
   const { user } = useAuth()
@@ -73,7 +74,7 @@ export default function ChatBox() {
                   <div
                     className={`p-2 max-w-[80%] bg-[#cecece] rounded-xl mt-2 ${mess.role == 'ai' ? 'text-left' : 'text-right'}`}
                   >
-                    <p className='font-medium indent-3'>{mess.message}</p>
+                    <ReactMarkdown>{mess.message}</ReactMarkdown>
                   </div>
                   {mess.role == 'user' ? (
                     <Avatar
