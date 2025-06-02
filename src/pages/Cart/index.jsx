@@ -134,8 +134,19 @@ const Cart = () => {
   }
 
   // Tính tổng tiền giỏ hàng
-  const calcTotal = () => {
+  const calcSubtotal = () => {
     return cartItems.reduce((total, item) => total + item.price * item.quantity, 0)
+  }
+
+  // Phí vận chuyển
+  const calcShippingFee = () => {
+    const subtotal = calcSubtotal()
+    return subtotal >= 300000 ? 0 : 30000 // Miễn phí vận chuyển cho đơn >= 300k
+  }
+
+  // Tổng cộng
+  const calcTotal = () => {
+    return calcSubtotal() + calcShippingFee()
   }
 
   // Xử lý thanh toán
@@ -320,17 +331,24 @@ const Cart = () => {
                 <span>Tạm tính</span>
                 <span>
                   {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(
-                    calcTotal(),
+                    calcSubtotal(),
                   )}
                 </span>
               </div>
+
               <div className='flex justify-between mb-2'>
                 <span>Phí vận chuyển</span>
-                <span>Miễn phí</span>
+                <span>
+                  {calcShippingFee() > 0
+                    ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(
+                        calcShippingFee(),
+                      )
+                    : 'Miễn phí'}
+                </span>
               </div>
 
-              <div className='border-t border-gray-200 pt-4 mt-4'>
-                <div className='flex justify-between font-bold'>
+              <div className='border-t border-gray-200 pt-4 mt-2'>
+                <div className='flex justify-between font-bold text-lg'>
                   <span>Tổng cộng</span>
                   <span>
                     {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(

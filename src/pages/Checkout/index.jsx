@@ -4,11 +4,14 @@ import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import cartApi from '../../apis/cartApi'
 import NoAuthApi from '../../apis/noAuthApi'
+import orderApi from '../../apis/orderApi'
+import useAuth from '../../stores/useAuth'
 
 const Checkout = () => {
   const navigate = useNavigate()
+  const { user, loading } = useAuth()
   const [cartItems, setCartItems] = useState([])
-  const [loading, setLoading] = useState(true)
+  const [loadingCart, setLoadingCart] = useState(true)
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -20,6 +23,18 @@ const Checkout = () => {
     note: '',
     paymentMethod: 'cod',
   })
+
+  // Load user info from localStorage when component mounts
+  useEffect(() => {
+    const savedUserInfo = localStorage.getItem('userInfo')
+    if (savedUserInfo) {
+      const parsedUserInfo = JSON.parse(savedUserInfo)
+      setFormData((prevData) => ({
+        ...prevData,
+        ...parsedUserInfo,
+      }))
+    }
+  }, [])
 
   // Danh sách thành phố mẫu (trong thực tế nên lấy từ API)
   const cities = [
@@ -103,6 +118,11 @@ const Checkout = () => {
     return items
   }
 
+  // Debug log để kiểm tra user
+  useEffect(() => {
+    console.log('Auth State:', { user, loading })
+  }, [user, loading])
+
   // Lấy dữ liệu giỏ hàng khi component mount
   useEffect(() => {
     const fetchCart = async () => {
@@ -120,12 +140,15 @@ const Checkout = () => {
         toast.error('Không thể tải giỏ hàng')
         navigate('/cart')
       } finally {
-        setLoading(false)
+        setLoadingCart(false)
       }
     }
 
-    fetchCart()
-  }, [navigate])
+    if (!loading && user) {
+      console.log('Fetching cart for user:', user)
+      fetchCart()
+    }
+  }, [navigate, loading, user])
 
   // Xử lý thay đổi form
   const handleChange = (e) => {
@@ -154,7 +177,7 @@ const Checkout = () => {
   }
 
   // Xử lý đặt hàng
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
 
     // Kiểm tra form
@@ -166,49 +189,78 @@ const Checkout = () => {
       return
     }
 
-    // Thông tin đơn hàng để gửi lên server
-    const orderData = {
-      customerInfo: {
-        fullName: formData.fullName,
-        email: formData.email,
-        phone: formData.phone,
-        address: `${formData.address}, ${formData.ward}, ${formData.district}, ${formData.city}`,
-        note: formData.note,
-      },
-      paymentMethod: formData.paymentMethod,
-      items: cartItems,
-      totalAmount: calcTotal(),
-      shippingFee: calcShippingFee(),
-      orderDate: new Date().toISOString(),
+    try {
+      // Chuẩn bị dữ liệu đơn hàng theo format API yêu cầu
+      const orderItems = cartItems.map((item) => ({
+        productID: item.productId,
+        size: item.size,
+        color: item.color,
+        quantity: item.quantity,
+        price: item.price,
+        name: item.name,
+        image: item.image,
+      }))
+
+      const orderData = {
+        oderItems: orderItems,
+        totalPrice: calcTotal(),
+        status: 'pending',
+      }
+
+      // Log dữ liệu gửi đi
+      console.log('Creating order with data:', {
+        userId: user.id,
+        orderData: orderData,
+      })
+
+      // Gọi API tạo đơn hàng
+      const response = await orderApi.createOrder(user.id, orderData)
+
+      // Log response từ API
+      console.log('Order API Response:', response)
+
+      if (response && response.data) {
+        // Xóa giỏ hàng sau khi đặt hàng thành công
+        try {
+          console.log('Clearing cart...')
+          await cartApi.clearCart()
+          console.log('Cart cleared successfully')
+          // Dispatch cart change event with count=0
+          window.dispatchEvent(new CustomEvent('cartChanged', { detail: { count: 0 } }))
+
+          toast.success('Đặt hàng thành công!')
+
+          // Lưu thông tin người dùng vào localStorage
+          const userInfo = {
+            fullName: formData.fullName,
+            email: formData.email,
+            phone: formData.phone,
+            address: formData.address,
+            city: formData.city,
+            district: formData.district,
+            ward: formData.ward,
+          }
+          localStorage.setItem('userInfo', JSON.stringify(userInfo))
+
+          // Chuyển hướng đến trang quản lý đơn hàng
+          setTimeout(() => {
+            navigate('/manage-order')
+          }, 2000)
+        } catch (error) {
+          console.error('Error clearing cart:', error)
+          toast.error('Đặt hàng thành công nhưng không thể xóa giỏ hàng')
+          navigate('/manage-order')
+        }
+      } else {
+        toast.error('Không thể tạo đơn hàng. Vui lòng thử lại!')
+      }
+    } catch (error) {
+      console.error('Error creating order:', error)
+      toast.error('Có lỗi xảy ra khi đặt hàng. Vui lòng thử lại!')
     }
-
-    // Trong thực tế, gửi dữ liệu đến server ở đây
-    console.log('Order data:', orderData)
-
-    // Giả lập thành công
-    toast.success('Đặt hàng thành công!')
-
-    // Xóa giỏ hàng sau khi đặt hàng
-    localStorage.removeItem('cart')
-
-    // Lưu thông tin người dùng vào localStorage để sử dụng cho lần sau
-    const userInfo = {
-      fullName: formData.fullName,
-      email: formData.email,
-      phone: formData.phone,
-    }
-    localStorage.setItem('userInfo', JSON.stringify(userInfo))
-
-    // Chuyển hướng đến trang hoàn tất thanh toán hoặc trang chủ
-    // navigate('/order-complete', { state: { orderData } });
-    // Nếu có trang hoàn tất đơn hàng, bạn có thể chuyển hướng đến trang đó
-    // Trong ví dụ này, chuyển về trang chủ
-    setTimeout(() => {
-      navigate('/')
-    }, 2000)
   }
 
-  if (loading) {
+  if (loading || loadingCart) {
     return <div className='container mx-auto px-4 py-8 text-center'>Đang tải...</div>
   }
 
