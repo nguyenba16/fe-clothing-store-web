@@ -63,16 +63,16 @@ const AboutUs = () => {
             Khám phá câu chuyện về thương hiệu thời trang của chúng tôi
           </p>
           <Breadcrumb
-            className='text-white text-30 mt-8'
+            className='text-white text-30 mt-8 [&_.ant-breadcrumb-separator]:text-white'
             items={[
               {
                 title: (
-                  <Link to='/' className='text-white hover:text-gray-200'>
+                  <Link to='/' className='!text-white hover:text-gray-200'>
                     Trang chủ
                   </Link>
                 ),
               },
-              { title: <span className='text-gray-300'>Về chúng tôi</span> },
+              { title: <span className='text-white font-bold'>Về chúng tôi</span> },
             ]}
           />
         </div>
