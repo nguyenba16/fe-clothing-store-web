@@ -3,125 +3,150 @@ import { FaMinus, FaPlus, FaTrash } from 'react-icons/fa'
 import { Link, useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import useAuth from '../../stores/useAuth'
-
-//sample cart data
-const sampleCartData = [
-  {
-    id: 1,
-    name: 'Sản phẩm 1',
-    image: 'https://via.placeholder.com/150',
-    price: 100000,
-    quantity: 2,
-    size: 'M',
-    color: 'Đỏ',
-  },
-  {
-    id: 2,
-    name: 'Sản phẩm 2',
-    image: 'https://via.placeholder.com/150',
-    price: 200000,
-    quantity: 1,
-    size: 'L',
-    color: 'Xanh',
-  },
-  {
-    id: 3,
-    name: 'Sản phẩm 3',
-    image: 'https://via.placeholder.com/150',
-    price: 150000,
-    quantity: 3,
-    size: 'S',
-    color: 'Vàng',
-  },
-  {
-    id: 4,
-    name: 'Sản phẩm 4',
-    image: 'https://via.placeholder.com/150',
-    price: 250000,
-    quantity: 1,
-    size: 'XL',
-    color: 'Đen',
-  },
-  {
-    id: 5,
-    name: 'Sản phẩm 5',
-    image: 'https://via.placeholder.com/150',
-    price: 300000,
-    quantity: 2,
-    size: 'XXL',
-    color: 'Trắng',
-  },
-  {
-    id: 6,
-    name: 'Sản phẩm 6',
-    image: 'https://via.placeholder.com/150',
-    price: 120000,
-    quantity: 1,
-    size: 'M',
-    color: 'Xám',
-  },
-  {
-    id: 7,
-    name: 'Sản phẩm 7',
-    image: 'https://via.placeholder.com/150',
-    price: 180000,
-    quantity: 2,
-    size: 'L',
-    color: 'Hồng',
-  },
-  {
-    id: 8,
-    name: 'Sản phẩm 8',
-    image: 'https://via.placeholder.com/150',
-    price: 220000,
-    quantity: 1,
-    size: 'S',
-    color: 'Nâu',
-  },
-]
+import cartApi from '../../apis/cartApi'
+import NoAuthApi from '../../apis/noAuthApi'
 
 const Cart = () => {
-  const [cartItems, setCartItems] = useState(sampleCartData)
+  const [cartItems, setCartItems] = useState([])
   const [loading, setLoading] = useState(true)
   const navigate = useNavigate()
   const { user } = useAuth()
-  const isAuthenticated = !!user // Kiểm tra xem người dùng đã đăng nhập hay chưa
+  const isAuthenticated = !!user
 
-  // Lấy dữ liệu giỏ hàng từ localStorage khi component mount
-  useEffect(() => {
-    const storedCart = localStorage.getItem('cart')
-    if (storedCart) {
-      setCartItems(JSON.parse(storedCart))
-    }
-    setLoading(false)
-  }, [])
+  // Transform cart items from API format to display format
+  const transformCartItems = async (cartData) => {
+    if (!cartData || !cartData.data || !cartData.data.items) return []
 
-  // Cập nhật localStorage khi cartItems thay đổi
-  useEffect(() => {
-    if (!loading) {
-      localStorage.setItem('cart', JSON.stringify(cartItems))
+    const items = []
+    const cartItems = cartData.data.items
+
+    // Iterate through each product in the cart
+    for (const [productId, variants] of Object.entries(cartItems)) {
+      try {
+        // Fetch product details
+        const productDetails = await NoAuthApi.getProductById(productId)
+
+        // Iterate through each variant (size_color) of the product
+        for (const [variant, quantity] of Object.entries(variants)) {
+          // Split variant into size and color
+          const [size, color] = variant.split('_')
+
+          // Create item object with product details
+          items.push({
+            productId,
+            size,
+            color,
+            quantity,
+            name: productDetails.data.productName,
+            price: productDetails.data.price,
+            image:
+              productDetails.data.productImage.find((img) => img.color === color)?.url ||
+              '/src/assets/images/home/san pham.png',
+          })
+        }
+      } catch (error) {
+        console.error(`Error fetching product details for ${productId}:`, error)
+        // Add item with default values if product details fetch fails
+        for (const [variant, quantity] of Object.entries(variants)) {
+          const [size, color] = variant.split('_')
+          items.push({
+            productId,
+            size,
+            color,
+            quantity,
+            name: 'Product Name',
+            price: 0,
+            image: '/src/assets/images/home/san pham.png',
+          })
+        }
+      }
     }
-  }, [cartItems, loading])
+
+    return items
+  }
+
+  // Lấy dữ liệu giỏ hàng từ API khi component mount
+  useEffect(() => {
+    const fetchCart = async () => {
+      try {
+        if (isAuthenticated) {
+          const cart = await cartApi.getCart()
+          console.log('Cart data:', cart)
+          const transformedItems = await transformCartItems(cart)
+          setCartItems(transformedItems)
+        }
+      } catch (error) {
+        console.error('Error fetching cart:', error)
+        toast.error('Không thể tải giỏ hàng')
+        setCartItems([])
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchCart()
+  }, [isAuthenticated])
 
   // Xử lý cập nhật số lượng sản phẩm
-  const updateQuantity = (productId, newQuantity) => {
+  const updateQuantity = async (productId, size, color, newQuantity) => {
     if (newQuantity < 1) return
 
-    setCartItems((prevItems) =>
-      prevItems.map((item) => (item.id === productId ? { ...item, quantity: newQuantity } : item)),
-    )
-    toast.success('Đã cập nhật số lượng sản phẩm')
+    try {
+      const updatedCart = await cartApi.updateItemQuantity(productId, size, color, newQuantity)
+      const transformedItems = await transformCartItems(updatedCart)
+      setCartItems(transformedItems)
+      // Dispatch cart change event
+      window.dispatchEvent(new Event('cartChanged'))
+      toast.success('Đã cập nhật số lượng sản phẩm')
+    } catch (error) {
+      console.error('Error updating quantity:', error)
+      toast.error('Không thể cập nhật số lượng')
+    }
   }
 
   // Xử lý xóa sản phẩm khỏi giỏ hàng
-  const removeItem = (productId) => {
-    setCartItems((prevItems) => prevItems.filter((item) => item.id !== productId))
-    toast.success('Đã xóa sản phẩm khỏi giỏ hàng')
+  const removeItem = async (productId, size, color) => {
+    try {
+      const updatedCart = await cartApi.removeItemFromCart(productId, size, color)
+      const transformedItems = await transformCartItems(updatedCart)
+      setCartItems(transformedItems)
+      // Dispatch cart change event
+      window.dispatchEvent(new Event('cartChanged'))
+      toast.success('Đã xóa sản phẩm khỏi giỏ hàng')
+    } catch (error) {
+      console.error('Error removing item:', error)
+      toast.error('Không thể xóa sản phẩm')
+    }
+  }
+
+  // Xử lý xóa toàn bộ giỏ hàng
+  const clearCart = async () => {
+    try {
+      await cartApi.clearCart()
+      setCartItems([])
+      // Dispatch cart change event
+      window.dispatchEvent(new Event('cartChanged'))
+      toast.success('Đã xóa toàn bộ giỏ hàng')
+    } catch (error) {
+      console.error('Error clearing cart:', error)
+      toast.error('Không thể xóa giỏ hàng')
+    }
   }
 
   // Tính tổng tiền giỏ hàng
-  const calcTotal = () => {
+  const calcSubtotal = () => {
     return cartItems.reduce((total, item) => total + item.price * item.quantity, 0)
+  }
+
+  // Phí vận chuyển
+  const calcShippingFee = () => {
+    const subtotal = calcSubtotal()
+    return subtotal >= 300000 ? 0 : 30000 // Miễn phí vận chuyển cho đơn >= 300k
+  }
+
+  // Tổng cộng
+  const calcTotal = () => {
+    return calcSubtotal() + calcShippingFee()
   }
 
   // Xử lý thanh toán
@@ -139,18 +164,26 @@ const Cart = () => {
 
     // Chuyển đến trang thanh toán hoặc xử lý thanh toán ở đây
     toast.info('Đang chuyển đến trang thanh toán...')
-    navigate('/checkout') // Nếu có trang thanh toán
+    navigate('/checkout')
+  }
+
+  if (loading) {
+    return (
+      <div className='container mx-auto px-4 py-8'>
+        <div className='text-center'>Đang tải giỏ hàng...</div>
+      </div>
+    )
   }
 
   // Xử lý trường hợp giỏ hàng trống
-  if (cartItems.length === 0) {
+  if (!cartItems || cartItems.length === 0) {
     return (
       <div className='container mx-auto px-4 py-8'>
         <h1 className='text-2xl font-bold mb-8 text-center'>Giỏ hàng của bạn</h1>
         <div className='bg-white rounded-lg shadow-md p-8 text-center'>
           <p className='text-lg mb-6'>Giỏ hàng của bạn đang trống</p>
           <Link
-            to='/'
+            to='/product?category=all'
             className='bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition duration-300'
           >
             Tiếp tục mua sắm
@@ -190,8 +223,8 @@ const Cart = () => {
               </thead>
               <tbody className='bg-white divide-y divide-gray-200'>
                 {cartItems.map((item) => (
-                  <tr key={item.id}>
-                    <td className='px-6 py-4 whitespace-nowrap'>
+                  <tr key={`${item.productId}-${item.size}-${item.color}`}>
+                    <td className='px-6 py-4'>
                       <div className='flex items-center'>
                         <div className='flex-shrink-0 h-20 w-20'>
                           <img
@@ -201,7 +234,12 @@ const Cart = () => {
                           />
                         </div>
                         <div className='ml-4'>
-                          <div className='text-sm font-medium text-gray-900'>{item.name}</div>
+                          <Link
+                            to={`/product/${item.productId}`}
+                            className='text-sm font-medium text-gray-900 break-words max-w-[200px] whitespace-normal hover:text-blue-600 transition-colors'
+                          >
+                            {item.name}
+                          </Link>
                           {item.size && (
                             <div className='text-sm text-gray-500'>Size: {item.size}</div>
                           )}
@@ -222,7 +260,9 @@ const Cart = () => {
                     <td className='px-6 py-4 whitespace-nowrap'>
                       <div className='flex items-center'>
                         <button
-                          onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                          onClick={() =>
+                            updateQuantity(item.productId, item.size, item.color, item.quantity - 1)
+                          }
                           className='p-1 rounded bg-gray-200 hover:bg-gray-300'
                         >
                           <FaMinus className='text-gray-600' />
@@ -231,11 +271,20 @@ const Cart = () => {
                           type='number'
                           min='1'
                           value={item.quantity}
-                          onChange={(e) => updateQuantity(item.id, parseInt(e.target.value) || 1)}
+                          onChange={(e) =>
+                            updateQuantity(
+                              item.productId,
+                              item.size,
+                              item.color,
+                              parseInt(e.target.value) || 1,
+                            )
+                          }
                           className='mx-2 w-12 text-center border rounded'
                         />
                         <button
-                          onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                          onClick={() =>
+                            updateQuantity(item.productId, item.size, item.color, item.quantity + 1)
+                          }
                           className='p-1 rounded bg-gray-200 hover:bg-gray-300'
                         >
                           <FaPlus className='text-gray-600' />
@@ -248,9 +297,9 @@ const Cart = () => {
                         currency: 'VND',
                       }).format(item.price * item.quantity)}
                     </td>
-                    <td className='px-6 py-4 whitespace-nowrap text-right text-sm font-medium'>
+                    <td className='px-10 py-4 whitespace-nowrap text-right text-sm font-medium'>
                       <button
-                        onClick={() => removeItem(item.id)}
+                        onClick={() => removeItem(item.productId, item.size, item.color)}
                         className='text-red-600 hover:text-red-800'
                       >
                         <FaTrash />
@@ -262,10 +311,13 @@ const Cart = () => {
             </table>
           </div>
 
-          <div className='mt-4'>
+          <div className='mt-4 flex justify-between items-center'>
             <Link to='/' className='text-blue-600 hover:text-blue-800'>
               ← Tiếp tục mua sắm
             </Link>
+            <button onClick={clearCart} className='text-red-600 hover:text-red-800'>
+              Xóa toàn bộ giỏ hàng
+            </button>
           </div>
         </div>
 
@@ -279,17 +331,24 @@ const Cart = () => {
                 <span>Tạm tính</span>
                 <span>
                   {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(
-                    calcTotal(),
+                    calcSubtotal(),
                   )}
                 </span>
               </div>
+
               <div className='flex justify-between mb-2'>
                 <span>Phí vận chuyển</span>
-                <span>Miễn phí</span>
+                <span>
+                  {calcShippingFee() > 0
+                    ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(
+                        calcShippingFee(),
+                      )
+                    : 'Miễn phí'}
+                </span>
               </div>
 
-              <div className='border-t border-gray-200 pt-4 mt-4'>
-                <div className='flex justify-between font-bold'>
+              <div className='border-t border-gray-200 pt-4 mt-2'>
+                <div className='flex justify-between font-bold text-lg'>
                   <span>Tổng cộng</span>
                   <span>
                     {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(

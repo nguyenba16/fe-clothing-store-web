@@ -8,6 +8,10 @@ import authApi from '../../apis/authApi'
 import { toast } from 'react-toastify'
 import { routes } from '../../routes'
 import useAuth from '../../stores/useAuth'
+import { InputAdornment, IconButton } from '@mui/material'
+import { Visibility, VisibilityOff } from '@mui/icons-material'
+import { useState } from 'react'
+
 const schema = yup.object().shape({
   email: yup.string().email('Email không hợp lệ').required('Vui lòng nhập email'),
   password: yup
@@ -18,6 +22,7 @@ const schema = yup.object().shape({
 
 export default function SignIn() {
   const navigation = useNavigate()
+  const [showPassword, setShowPassword] = useState(false)
   const { setUser, setLoading } = useAuth()
   const {
     register,
@@ -76,7 +81,7 @@ export default function SignIn() {
           <TextField
             {...register('password')}
             label='Mật khẩu'
-            type='password'
+            type={showPassword ? 'text' : 'password'}
             variant='outlined'
             error={!!errors.password}
             helperText={errors.password?.message}
@@ -89,6 +94,15 @@ export default function SignIn() {
                 position: 'absolute',
                 bottom: '-20px',
               },
+            }}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position='end'>
+                  <IconButton onClick={() => setShowPassword(!showPassword)} edge='end'>
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              ),
             }}
           />
           <Button

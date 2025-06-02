@@ -2,7 +2,9 @@ import { useEffect, useState } from 'react'
 import { Modal, Box } from '@mui/material'
 import adminApi from '../../../../apis/adminApi'
 import { toast } from 'react-toastify'
-const RowOrder = ({ val, key, index }) => {
+import { FaEye } from 'react-icons/fa'
+
+const RowOrder = ({ val, key, index, formatCurrency }) => {
   const [orderItems, setOrderItems] = useState([])
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [status, setStatus] = useState(val.status)
@@ -46,7 +48,7 @@ const RowOrder = ({ val, key, index }) => {
         </td>
         <td className='border border-gray-500 p-2 w-[200px] text-center'>
           <div className='font-medium text-center text-[20px] text-red-700'>
-            {val.totalPrice} vnđ
+            {formatCurrency(val.totalPrice)}
           </div>
         </td>
 
@@ -114,7 +116,7 @@ const RowOrder = ({ val, key, index }) => {
               })}
             </table>
             <p className='flex gap-3 justify-end mt-3'>
-              Tổng tiền: <p className='text-red-700 font-bold'>{val.totalPrice}vnđ</p>
+              Tổng tiền: <p className='text-red-700 font-bold'>{formatCurrency(val.totalPrice)}</p>
             </p>
           </div>
           <div className='w-full flex justify-center'>

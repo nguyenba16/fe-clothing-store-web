@@ -1,11 +1,14 @@
 import React, { use, useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import NoAuthApi from '../../apis/noAuthApi'
+import cartApi from '../../apis/cartApi'
 import addcart from '../../assets/icons/addcart.svg'
 import photo4 from '../../assets/images/home/san pham.png'
 import ProductCarousel from '../../components/components/ProductCarousel'
 import StarRating from './components/StarRating'
 import { set } from 'react-hook-form'
+import { toast } from 'react-toastify'
+import useAuth from '../../stores/useAuth'
 // Sample product images - replace with your actual images
 const productImagesSample = [
   '/src/assets/images/DetailProduct/vay1.avif',
@@ -160,6 +163,8 @@ export default function DetailProduct() {
   const [productImages, setProductImages] = useState(productImagesSample)
   const [colors, setColors] = useState(colorsSample)
   const [sizes, setSizes] = useState(sizeSample)
+  const { user } = useAuth()
+  const isAuthenticated = !!user
 
   const { id } = useParams()
 
@@ -263,49 +268,36 @@ export default function DetailProduct() {
     setSelectedImage(index)
   }
   // Handle add to cart
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
     // Validate color and size selection
     if (selectedColor === null) {
-      alert('Vui lòng chọn màu sắc')
+      toast.warning('Vui lòng chọn màu sắc')
       return
     }
     if (selectedSize === null) {
-      alert('Vui lòng chọn kích thước')
+      toast.warning('Vui lòng chọn kích thước')
       return
     }
 
-    // Create cart item
-    const cartItem = {
-      id: id,
-      productName: productName,
-      price: price.replace(/[^\d]/g, ''), // Remove currency symbols
-      quantity: 1,
-      color: colors[selectedColor].name,
-      size: sizes[selectedSize],
-      image: productImages[0],
+    if (!isAuthenticated) {
+      toast.warning('Vui lòng đăng nhập để thêm vào giỏ hàng')
+      return
     }
 
-    // Get existing cart from localStorage
-    const existingCart = JSON.parse(localStorage.getItem('cart')) || []
+    try {
+      const productId = id
+      const color = colors[selectedColor].name
+      const size = sizes[selectedSize]
+      const quantity = 1
 
-    // Check if item already exists in cart (same product, color, size)
-    const existingItemIndex = existingCart.findIndex(
-      (item) =>
-        item.id === cartItem.id && item.color === cartItem.color && item.size === cartItem.size,
-    )
-
-    if (existingItemIndex !== -1) {
-      // Update quantity if item exists
-      existingCart[existingItemIndex].quantity += 1
-    } else {
-      // Add new item if it doesn't exist
-      existingCart.push(cartItem)
+      await cartApi.addItemToCart(productId, size, color, quantity)
+      // Dispatch cart change event
+      window.dispatchEvent(new Event('cartChanged'))
+      toast.success('Đã thêm vào giỏ hàng')
+    } catch (error) {
+      console.error('Error adding to cart:', error)
+      toast.error('Không thể thêm vào giỏ hàng')
     }
-
-    // Save updated cart to localStorage
-    localStorage.setItem('cart', JSON.stringify(existingCart))
-
-    alert('Đã thêm vào giỏ hàng')
   }
   // Handle buy now
   const handleBuyNow = () => {

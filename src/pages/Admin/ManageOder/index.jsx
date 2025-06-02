@@ -4,6 +4,14 @@ import RowOrder from './components/rowOrder'
 import AdminApi from '../../../apis/adminApi'
 import LoadingComponent from '../../../components/components/LoadingComponent'
 
+// Format currency function
+const formatCurrency = (amount) => {
+  return new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
+  }).format(amount)
+}
+
 export default function ManageOder() {
   const [orderList, setOrderList] = useState([])
   const [status, setStatus] = useState('')
@@ -23,9 +31,11 @@ export default function ManageOder() {
     setLoading(true)
     try {
       const orders = await AdminApi.getAllOrders(status)
-      setOrderList(orders)
+      // Sắp xếp đơn hàng theo ngày tạo giảm dần
+      const sortedOrders = orders.sort((a, b) => new Date(b.createAt) - new Date(a.createAt))
+      setOrderList(sortedOrders)
       setLoading(false)
-      return orders
+      return sortedOrders
     } catch (error) {
       setOrderList([])
       setLoading(false)
@@ -83,11 +93,18 @@ export default function ManageOder() {
               orderList
                 .slice(skipPage * rowsPerPage, (skipPage + 1) * rowsPerPage)
                 .map((val, index) => {
-                  return <RowOrder val={val} key={val.id} index={skipPage * rowsPerPage + index} />
+                  return (
+                    <RowOrder
+                      val={val}
+                      key={val.id}
+                      index={skipPage * rowsPerPage + index}
+                      formatCurrency={formatCurrency}
+                    />
+                  )
                 })
             ) : (
               <tr>
-                <td colSpan='5' className='text-center p-4'>
+                <td colSpan='6' className='text-center p-4'>
                   Chưa có đơn hàng nào.
                 </td>
               </tr>

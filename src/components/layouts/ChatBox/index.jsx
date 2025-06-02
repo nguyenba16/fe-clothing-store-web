@@ -5,6 +5,8 @@ import { set } from 'react-hook-form'
 import ChatBoxApi from '../../../apis/chatboxApi'
 import useAuth from '../../../stores/useAuth'
 import { Avatar } from 'antd'
+import { toast } from 'react-toastify'
+import ReactMarkdown from 'react-markdown'
 
 export default function ChatBox() {
   const { user } = useAuth()
@@ -18,6 +20,13 @@ export default function ChatBox() {
     },
   ])
 
+  function handleOpenChatBox() {
+    if (!user) {
+      toast.error('Vui lòng đăng nhập!')
+    } else {
+      setIsOpenChatbox(true)
+    }
+  }
   const handleSendMessage = async () => {
     const mess = {
       role: 'user',
@@ -43,7 +52,7 @@ export default function ChatBox() {
   return (
     <div className={`overscroll-x-auto fixed bottom-3 right-3 z-50`}>
       <div
-        onClick={() => setIsOpenChatbox(true)}
+        onClick={() => handleOpenChatBox()}
         className={`px-4 py-2 bg-[#000] text-white rounded-full text-[18px] ${isOpenChatbox ? 'hidden' : ''}`}
       >
         Mở ChatBox
@@ -65,7 +74,7 @@ export default function ChatBox() {
                   <div
                     className={`p-2 max-w-[80%] bg-[#cecece] rounded-xl mt-2 ${mess.role == 'ai' ? 'text-left' : 'text-right'}`}
                   >
-                    <p className='font-medium indent-3'>{mess.message}</p>
+                    <ReactMarkdown>{mess.message}</ReactMarkdown>
                   </div>
                   {mess.role == 'user' ? (
                     <Avatar

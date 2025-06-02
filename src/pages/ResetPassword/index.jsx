@@ -70,7 +70,7 @@ export default function ResetPassword() {
           />
           <button
             onClick={handSendVerifyCode}
-            className='px-5 py-2 bg-green-600 w-[10vw] text-[18px] text-white rounded-2xl mt-5'
+            className='px-5 py-2 bg-green-600  text-[18px] text-white rounded-2xl mt-5'
           >
             Gửi mã
           </button>
@@ -94,7 +94,7 @@ export default function ResetPassword() {
           />
           <button
             onClick={handChangPass}
-            className='px-5 py-2 bg-green-600 w-[10vw] text-[18px] text-white rounded-2xl mt-5'
+            className='px-5 py-2 bg-green-600  text-[18px] text-white rounded-2xl mt-5'
           >
             Đổi mật khẩu
           </button>

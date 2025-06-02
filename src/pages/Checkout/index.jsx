@@ -2,11 +2,16 @@ import React, { useEffect, useState } from 'react'
 import { FaArrowLeft } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
+import cartApi from '../../apis/cartApi'
+import NoAuthApi from '../../apis/noAuthApi'
+import orderApi from '../../apis/orderApi'
+import useAuth from '../../stores/useAuth'
 
 const Checkout = () => {
   const navigate = useNavigate()
+  const { user, loading } = useAuth()
   const [cartItems, setCartItems] = useState([])
-  const [loading, setLoading] = useState(true)
+  const [loadingCart, setLoadingCart] = useState(true)
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -18,6 +23,18 @@ const Checkout = () => {
     note: '',
     paymentMethod: 'cod',
   })
+
+  // Load user info from localStorage when component mounts
+  useEffect(() => {
+    const savedUserInfo = localStorage.getItem('userInfo')
+    if (savedUserInfo) {
+      const parsedUserInfo = JSON.parse(savedUserInfo)
+      setFormData((prevData) => ({
+        ...prevData,
+        ...parsedUserInfo,
+      }))
+    }
+  }, [])
 
   // Danh sách thành phố mẫu (trong thực tế nên lấy từ API)
   const cities = [
@@ -37,35 +54,101 @@ const Checkout = () => {
   const paymentMethods = [
     { id: 'cod', name: 'Thanh toán khi nhận hàng (COD)', icon: '💵' },
     { id: 'bank', name: 'Chuyển khoản ngân hàng', icon: '🏦' },
-    { id: 'momo', name: 'Ví điện tử MoMo', icon: '💳' },
-    { id: 'vnpay', name: 'VN Pay', icon: '💳' },
+    {
+      id: 'momo',
+      name: 'Ví điện tử MoMo',
+      icon: 'https://upload.wikimedia.org/wikipedia/vi/f/fe/MoMo_Logo.png',
+    },
+    {
+      id: 'vnpay',
+      name: 'VNPAY',
+      icon: 'https://vinadesign.vn/uploads/thumbnails/800/2023/05/vnpay-logo-vinadesign-25-12-59-16.jpg',
+    },
   ]
+
+  // Transform cart items from API format to display format
+  const transformCartItems = async (cartData) => {
+    if (!cartData || !cartData.data || !cartData.data.items) return []
+
+    const items = []
+    const cartItems = cartData.data.items
+
+    // Iterate through each product in the cart
+    for (const [productId, variants] of Object.entries(cartItems)) {
+      try {
+        // Fetch product details
+        const productDetails = await NoAuthApi.getProductById(productId)
+
+        // Iterate through each variant (size_color) of the product
+        for (const [variant, quantity] of Object.entries(variants)) {
+          // Split variant into size and color
+          const [size, color] = variant.split('_')
+
+          // Create item object with product details
+          items.push({
+            productId,
+            size,
+            color,
+            quantity,
+            name: productDetails.data.productName,
+            price: productDetails.data.price,
+            image:
+              productDetails.data.productImage.find((img) => img.color === color)?.url ||
+              '/src/assets/images/home/san pham.png',
+          })
+        }
+      } catch (error) {
+        console.error(`Error fetching product details for ${productId}:`, error)
+        // Add item with default values if product details fetch fails
+        for (const [variant, quantity] of Object.entries(variants)) {
+          const [size, color] = variant.split('_')
+          items.push({
+            productId,
+            size,
+            color,
+            quantity,
+            name: 'Product Name',
+            price: 0,
+            image: '/src/assets/images/home/san pham.png',
+          })
+        }
+      }
+    }
+
+    return items
+  }
+
+  // Debug log để kiểm tra user
+  useEffect(() => {
+    console.log('Auth State:', { user, loading })
+  }, [user, loading])
 
   // Lấy dữ liệu giỏ hàng khi component mount
   useEffect(() => {
-    const storedCart = localStorage.getItem('cart')
-    if (storedCart) {
-      setCartItems(JSON.parse(storedCart))
-    } else {
-      // Nếu không có giỏ hàng, chuyển về trang giỏ hàng
-      toast.info('Giỏ hàng của bạn đang trống')
-      navigate('/cart')
+    const fetchCart = async () => {
+      try {
+        const cart = await cartApi.getCart()
+        const transformedItems = await transformCartItems(cart)
+        setCartItems(transformedItems)
+
+        if (transformedItems.length === 0) {
+          toast.info('Giỏ hàng của bạn đang trống')
+          navigate('/cart')
+        }
+      } catch (error) {
+        console.error('Error fetching cart:', error)
+        toast.error('Không thể tải giỏ hàng')
+        navigate('/cart')
+      } finally {
+        setLoadingCart(false)
+      }
     }
 
-    // Lấy thông tin người dùng từ localStorage nếu có
-    const userInfo = localStorage.getItem('userInfo')
-    if (userInfo) {
-      const parsedInfo = JSON.parse(userInfo)
-      setFormData((prevData) => ({
-        ...prevData,
-        fullName: parsedInfo.fullName || '',
-        email: parsedInfo.email || '',
-        phone: parsedInfo.phone || '',
-      }))
+    if (!loading && user) {
+      console.log('Fetching cart for user:', user)
+      fetchCart()
     }
-
-    setLoading(false)
-  }, [navigate])
+  }, [navigate, loading, user])
 
   // Xử lý thay đổi form
   const handleChange = (e) => {
@@ -94,7 +177,7 @@ const Checkout = () => {
   }
 
   // Xử lý đặt hàng
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
 
     // Kiểm tra form
@@ -106,49 +189,78 @@ const Checkout = () => {
       return
     }
 
-    // Thông tin đơn hàng để gửi lên server
-    const orderData = {
-      customerInfo: {
-        fullName: formData.fullName,
-        email: formData.email,
-        phone: formData.phone,
-        address: `${formData.address}, ${formData.ward}, ${formData.district}, ${formData.city}`,
-        note: formData.note,
-      },
-      paymentMethod: formData.paymentMethod,
-      items: cartItems,
-      totalAmount: calcTotal(),
-      shippingFee: calcShippingFee(),
-      orderDate: new Date().toISOString(),
+    try {
+      // Chuẩn bị dữ liệu đơn hàng theo format API yêu cầu
+      const orderItems = cartItems.map((item) => ({
+        productID: item.productId,
+        size: item.size,
+        color: item.color,
+        quantity: item.quantity,
+        price: item.price,
+        name: item.name,
+        image: item.image,
+      }))
+
+      const orderData = {
+        oderItems: orderItems,
+        totalPrice: calcTotal(),
+        status: 'pending',
+      }
+
+      // Log dữ liệu gửi đi
+      console.log('Creating order with data:', {
+        userId: user.id,
+        orderData: orderData,
+      })
+
+      // Gọi API tạo đơn hàng
+      const response = await orderApi.createOrder(user.id, orderData)
+
+      // Log response từ API
+      console.log('Order API Response:', response)
+
+      if (response && response.data) {
+        // Xóa giỏ hàng sau khi đặt hàng thành công
+        try {
+          console.log('Clearing cart...')
+          await cartApi.clearCart()
+          console.log('Cart cleared successfully')
+          // Dispatch cart change event with count=0
+          window.dispatchEvent(new CustomEvent('cartChanged', { detail: { count: 0 } }))
+
+          toast.success('Đặt hàng thành công!')
+
+          // Lưu thông tin người dùng vào localStorage
+          const userInfo = {
+            fullName: formData.fullName,
+            email: formData.email,
+            phone: formData.phone,
+            address: formData.address,
+            city: formData.city,
+            district: formData.district,
+            ward: formData.ward,
+          }
+          localStorage.setItem('userInfo', JSON.stringify(userInfo))
+
+          // Chuyển hướng đến trang quản lý đơn hàng
+          setTimeout(() => {
+            navigate('/manage-order')
+          }, 2000)
+        } catch (error) {
+          console.error('Error clearing cart:', error)
+          toast.error('Đặt hàng thành công nhưng không thể xóa giỏ hàng')
+          navigate('/manage-order')
+        }
+      } else {
+        toast.error('Không thể tạo đơn hàng. Vui lòng thử lại!')
+      }
+    } catch (error) {
+      console.error('Error creating order:', error)
+      toast.error('Có lỗi xảy ra khi đặt hàng. Vui lòng thử lại!')
     }
-
-    // Trong thực tế, gửi dữ liệu đến server ở đây
-    console.log('Order data:', orderData)
-
-    // Giả lập thành công
-    toast.success('Đặt hàng thành công!')
-
-    // Xóa giỏ hàng sau khi đặt hàng
-    localStorage.removeItem('cart')
-
-    // Lưu thông tin người dùng vào localStorage để sử dụng cho lần sau
-    const userInfo = {
-      fullName: formData.fullName,
-      email: formData.email,
-      phone: formData.phone,
-    }
-    localStorage.setItem('userInfo', JSON.stringify(userInfo))
-
-    // Chuyển hướng đến trang hoàn tất thanh toán hoặc trang chủ
-    // navigate('/order-complete', { state: { orderData } });
-    // Nếu có trang hoàn tất đơn hàng, bạn có thể chuyển hướng đến trang đó
-    // Trong ví dụ này, chuyển về trang chủ
-    setTimeout(() => {
-      navigate('/')
-    }, 2000)
   }
 
-  if (loading) {
+  if (loading || loadingCart) {
     return <div className='container mx-auto px-4 py-8 text-center'>Đang tải...</div>
   }
 
@@ -289,7 +401,11 @@ const Checkout = () => {
                         className='mr-3 h-4 w-4'
                       />
                       <label htmlFor={method.id} className='flex items-center cursor-pointer'>
-                        <span className='mr-2'>{method.icon}</span>
+                        {method.id === 'momo' || method.id === 'vnpay' ? (
+                          <img src={method.icon} alt={method.name} className='h-6 w-auto mr-2' />
+                        ) : (
+                          <span className='mr-2'>{method.icon}</span>
+                        )}
                         {method.name}
                       </label>
                     </div>

@@ -3,10 +3,10 @@ import axiosClient from './axiosClient'
 import userEndpoints from '../services/endpoints/user.endpoints'
 
 class UserApi {
-  async signUp(name, email, phoneNumber, nameAccount, password, address) {
+  async signUp(name, email, phoneNumber, nameAccount, password, address, codeVerify) {
     const role = 'CUSTOMER'
     try {
-      const res = await axiosClient.post(authEndpoints.signup, {
+      const res = await axiosClient.post(`${authEndpoints.signup}/${codeVerify}`, {
         name,
         email,
         phoneNumber,
