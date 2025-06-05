@@ -37,10 +37,10 @@ const RowOrder = ({ val, key, index, formatCurrency }) => {
             const res = await NoAuthApi.getProductById(item.productID)
             info[item.productID] = {
               name: res.data.productName,
-              image: res.data.productImage?.[0]?.url || '',
+              images: res.data.productImage || [],
             }
           } catch (error) {
-            info[item.productID] = { name: '', image: '' }
+            info[item.productID] = { name: '', image: '', images: [] }
           }
         }),
       )
@@ -135,7 +135,7 @@ const RowOrder = ({ val, key, index, formatCurrency }) => {
                 {orderItems.map((item, index) => {
                   const info = productInfo[item.productID] || {}
                   let imageUrl = info.image
-                  if (info.images && Array.isArray(info.images) && item.color) {
+                  if (info.images && Array.isArray(info.images)) {
                     const colorImage = info.images.find((img) => img.color === item.color)
                     if (colorImage) {
                       imageUrl = colorImage.url

@@ -149,6 +149,16 @@ const ProductCard = ({ image, title, description, rating, price, badge, discount
       const quantity = 1
       // Lấy thêm thông tin sản phẩm nếu cần (giá, tên, ảnh)
       const res = await NoAuthApi.getProductById(productId)
+
+      let imageUrl
+      if (res.data.productImage && Array.isArray(res.data.productImage)) {
+        // Tìm ảnh theo màu nếu có
+        const colorImage = res.data.productImage.find((img) => img.color === color)
+        if (colorImage) {
+          imageUrl = colorImage.url
+        }
+      }
+
       const orderItem = {
         productID: productId,
         size,
@@ -156,7 +166,7 @@ const ProductCard = ({ image, title, description, rating, price, badge, discount
         quantity,
         price: res.data.price,
         name: res.data.name || title,
-        image: res.data.images?.[color] || image,
+        image: imageUrl,
       }
       localStorage.setItem('directOrder', JSON.stringify({ oderItems: [orderItem] }))
       toast.info('Đang chuyển đến trang thanh toán...')
