@@ -1,5 +1,5 @@
 import React, { use, useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import NoAuthApi from '../../apis/noAuthApi'
 import cartApi from '../../apis/cartApi'
 import addcart from '../../assets/icons/addcart.svg'
@@ -165,6 +165,7 @@ export default function DetailProduct() {
   const [sizes, setSizes] = useState(sizeSample)
   const { user } = useAuth()
   const isAuthenticated = !!user
+  const navigate = useNavigate()
 
   const { id } = useParams()
 
@@ -299,10 +300,44 @@ export default function DetailProduct() {
       toast.error('Không thể thêm vào giỏ hàng')
     }
   }
+  const logicAddToCart = async () => {
+    // Validate color and size selection
+    if (selectedColor === null) {
+      toast.warning('Vui lòng chọn màu sắc')
+      return
+    }
+    if (selectedSize === null) {
+      toast.warning('Vui lòng chọn kích thước')
+      return
+    }
+
+    if (!isAuthenticated) {
+      toast.warning('Vui lòng đăng nhập để thêm vào giỏ hàng')
+      return
+    }
+
+    try {
+      const productId = id
+      const color = colors[selectedColor].name
+      const size = sizes[selectedSize]
+      const quantity = 1
+      await cartApi.addItemToCart(productId, size, color, quantity)
+      // Dispatch cart change event
+      window.dispatchEvent(new Event('cartChanged'))
+      // toast.success('Đã thêm vào giỏ hàng')
+    } catch (error) {
+      console.error('Error adding to cart:', error)
+      // toast.error('Không thể thêm vào giỏ hàng')
+    }
+  }
   // Handle buy now
   const handleBuyNow = () => {
-    alert('Mua ngay')
+        logicAddToCart();
+        // Chuyển sang trang thanh toán
+        toast.info('Đang chuyển đến trang thanh toán...')
+        navigate('/checkout')
   }
+  
   return (
     <div>
       <div className='max-w-7xl mx-auto p-4 md:p-6 flex flex-col md:flex-row gap-8 font-text'>
@@ -362,7 +397,7 @@ export default function DetailProduct() {
                     }`}
                     style={{ backgroundColor: color.hex }}
                     onClick={() => setSelectedColor(index)}
-                    title={color.name}
+                    // title={color.name}
                   ></div>
                 ))}
               </div>
