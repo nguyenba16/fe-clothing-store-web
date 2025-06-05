@@ -82,7 +82,7 @@ const ProductCard = ({ image, title, description, rating, price, badge, discount
   const [isLoading, setIsLoading] = useState(false)
   const { user } = useAuth()
   const isAuthenticated = !!user
-  
+
   // Xử lý click bên ngoài modal để đóng modal
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -117,24 +117,53 @@ const ProductCard = ({ image, title, description, rating, price, badge, discount
     }
   }
   useEffect(() => {
-    fetchProductDetail();
+    fetchProductDetail()
   }, [id])
 
   const handleSubmit = () => {
     if (actionType === 'cart') {
-      logicAddToCart();
+      logicAddToCart()
     } else {
-      logicBuyNow();
+      logicBuyNow()
     }
-    setShowSizeColorModal(false);
+    setShowSizeColorModal(false)
   }
-  const logicBuyNow = () => {
-    logicAddToCart();
-
-    // Chuyển sang trang thanh toán
-    toast.info('Đang chuyển đến trang thanh toán...')
-    navigate('/checkout')
-    
+  const logicBuyNow = async () => {
+    // Validate color and size selection
+    if (selectedColor === null) {
+      toast.warning('Vui lòng chọn màu sắc')
+      return
+    }
+    if (selectedSize === null) {
+      toast.warning('Vui lòng chọn kích thước')
+      return
+    }
+    if (!isAuthenticated) {
+      toast.warning('Vui lòng đăng nhập để mua hàng')
+      return
+    }
+    try {
+      const productId = id
+      const color = colors[selectedColor].name
+      const size = sizes[selectedSize]
+      const quantity = 1
+      // Lấy thêm thông tin sản phẩm nếu cần (giá, tên, ảnh)
+      const res = await NoAuthApi.getProductById(productId)
+      const orderItem = {
+        productID: productId,
+        size,
+        color,
+        quantity,
+        price: res.data.price,
+        name: res.data.name || title,
+        image: res.data.images?.[color] || image,
+      }
+      localStorage.setItem('directOrder', JSON.stringify({ oderItems: [orderItem] }))
+      toast.info('Đang chuyển đến trang thanh toán...')
+      navigate('/checkout?direct=true')
+    } catch (error) {
+      toast.error('Không thể thực hiện mua ngay')
+    }
   }
   const logicAddToCart = async () => {
     // Validate color and size selection
@@ -171,21 +200,21 @@ const ProductCard = ({ image, title, description, rating, price, badge, discount
     navigate(`/product/${id}`)
   }
   const handleAddToCart = async (e) => {
-    e.stopPropagation();
-    fetchProductDetail(id);
-    setShowSizeColorModal(true);
+    e.stopPropagation()
+    fetchProductDetail(id)
+    setShowSizeColorModal(true)
     // alert('Đã thêm vào giỏ hàng');
-    setActionType('cart');
+    setActionType('cart')
   }
   const handleAddToWishlist = (e) => {
-    e.stopPropagation();
-    alert('Đã thêm vào danh sách yêu thích');
+    e.stopPropagation()
+    alert('Đã thêm vào danh sách yêu thích')
   }
   const handleBuyNow = (e) => {
-    e.stopPropagation();
-    fetchProductDetail(id);
-    setShowSizeColorModal(true);
-    setActionType('buy');
+    e.stopPropagation()
+    fetchProductDetail(id)
+    setShowSizeColorModal(true)
+    setActionType('buy')
   }
   return (
     <motion.div
@@ -246,8 +275,10 @@ const ProductCard = ({ image, title, description, rating, price, badge, discount
               />
             </svg>
           </button>
-          <button className='bg-white rounded-full p-3 shadow-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-400 transition-all'
-            onClick={handleAddToWishlist}>
+          <button
+            className='bg-white rounded-full p-3 shadow-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-400 transition-all'
+            onClick={handleAddToWishlist}
+          >
             <svg
               xmlns='http://www.w3.org/2000/svg'
               className='h-5 w-5'
@@ -261,13 +292,11 @@ const ProductCard = ({ image, title, description, rating, price, badge, discount
               />
             </svg>
           </button>
-          <button 
+          <button
             className='bg-white rounded-full p-3 shadow-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-400 transition-all'
             onClick={handleAddToCart}
           >
-
             <img src={addcart} alt='Add to Cart' className='h-5 w-5' />
-
           </button>
         </motion.div>
       </div>
@@ -307,8 +336,10 @@ const ProductCard = ({ image, title, description, rating, price, badge, discount
             )}
             <span className='text-lg font-semibold text-red-600'>{price}</span>
           </div>
-          <button className='bg-black text-white text-sm px-4 py-1.5 rounded-full hover:bg-gray-800 transition-colors'
-            onClick={handleBuyNow}>
+          <button
+            className='bg-black text-white text-sm px-4 py-1.5 rounded-full hover:bg-gray-800 transition-colors'
+            onClick={handleBuyNow}
+          >
             Mua ngay
           </button>
         </div>
@@ -331,21 +362,32 @@ const ProductCard = ({ image, title, description, rating, price, badge, discount
               exit={{ scale: 0.9, opacity: 0 }}
             >
               <div className='flex justify-between items-center mb-3'>
-                <h3 className='font-medium'>{actionType === 'cart' ? 'Thêm vào giỏ hàng' : 'Mua ngay'}</h3>
+                <h3 className='font-medium'>
+                  {actionType === 'cart' ? 'Thêm vào giỏ hàng' : 'Mua ngay'}
+                </h3>
                 <button
                   onClick={() => setShowSizeColorModal(false)}
                   className='text-gray-500 hover:text-gray-700'
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                  <svg
+                    xmlns='http://www.w3.org/2000/svg'
+                    className='h-5 w-5'
+                    viewBox='0 0 20 20'
+                    fill='currentColor'
+                  >
+                    <path
+                      fillRule='evenodd'
+                      d='M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z'
+                      clipRule='evenodd'
+                    />
                   </svg>
                 </button>
               </div>
 
               {isLoading ? (
-                <div className="flex flex-col items-center justify-center py-4">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black mb-2"></div>
-                  <p className="text-sm text-gray-600">Đang tải thông tin sản phẩm...</p>
+                <div className='flex flex-col items-center justify-center py-4'>
+                  <div className='animate-spin rounded-full h-8 w-8 border-b-2 border-black mb-2'></div>
+                  <p className='text-sm text-gray-600'>Đang tải thông tin sản phẩm...</p>
                 </div>
               ) : (
                 <>
@@ -356,10 +398,11 @@ const ProductCard = ({ image, title, description, rating, price, badge, discount
                       {sizes.map((size, index) => (
                         <button
                           key={size}
-                          className={`w-8 h-8 rounded-md border ${selectedSize === index
+                          className={`w-8 h-8 rounded-md border ${
+                            selectedSize === index
                               ? 'border-black bg-black text-white'
                               : 'border-gray-300 hover:border-gray-500'
-                            }`}
+                          }`}
                           onClick={() => setSelectedSize(index)}
                         >
                           {size}
@@ -375,9 +418,10 @@ const ProductCard = ({ image, title, description, rating, price, badge, discount
                       {colors.map((color, index) => (
                         <button
                           key={color.name}
-                          className={`w-8 h-8 rounded-full border ${selectedColor === index ? 'ring-2 ring-black ring-offset-1' : ''
-                            }`}
-                          style={{backgroundColor: color.hex }}
+                          className={`w-8 h-8 rounded-full border ${
+                            selectedColor === index ? 'ring-2 ring-black ring-offset-1' : ''
+                          }`}
+                          style={{ backgroundColor: color.hex }}
                           onClick={() => setSelectedColor(index)}
                         />
                       ))}
@@ -393,7 +437,11 @@ const ProductCard = ({ image, title, description, rating, price, badge, discount
                 onClick={handleSubmit}
                 disabled={isLoading}
               >
-                {isLoading ? 'Đang tải...' : actionType === 'cart' ? 'Thêm vào giỏ hàng' : 'Mua ngay'}
+                {isLoading
+                  ? 'Đang tải...'
+                  : actionType === 'cart'
+                    ? 'Thêm vào giỏ hàng'
+                    : 'Mua ngay'}
               </button>
             </motion.div>
           </motion.div>

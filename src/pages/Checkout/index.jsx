@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { FaArrowLeft } from 'react-icons/fa'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import cartApi from '../../apis/cartApi'
 import NoAuthApi from '../../apis/noAuthApi'
@@ -9,6 +9,7 @@ import useAuth from '../../stores/useAuth'
 
 const Checkout = () => {
   const navigate = useNavigate()
+  const location = useLocation()
   const { user, loading } = useAuth()
   const [cartItems, setCartItems] = useState([])
   const [loadingCart, setLoadingCart] = useState(true)
@@ -123,10 +124,25 @@ const Checkout = () => {
     console.log('Auth State:', { user, loading })
   }, [user, loading])
 
-  // Lấy dữ liệu giỏ hàng khi component mount
+  // Lấy dữ liệu giỏ hàng hoặc đơn hàng trực tiếp khi component mount
   useEffect(() => {
-    const fetchCart = async () => {
+    const fetchOrderData = async () => {
       try {
+        // Kiểm tra xem có phải là đơn hàng trực tiếp không
+        const isDirectOrder = new URLSearchParams(location.search).get('direct') === 'true'
+
+        if (isDirectOrder) {
+          // Lấy thông tin đơn hàng trực tiếp từ localStorage
+          const directOrderData = localStorage.getItem('directOrder')
+          if (directOrderData) {
+            const orderData = JSON.parse(directOrderData)
+            setCartItems(orderData.oderItems)
+            setLoadingCart(false)
+            return
+          }
+        }
+
+        // Nếu không phải đơn hàng trực tiếp, lấy từ giỏ hàng
         const cart = await cartApi.getCart()
         const transformedItems = await transformCartItems(cart)
         setCartItems(transformedItems)
@@ -136,8 +152,8 @@ const Checkout = () => {
           navigate('/cart')
         }
       } catch (error) {
-        console.error('Error fetching cart:', error)
-        toast.error('Không thể tải giỏ hàng')
+        console.error('Error fetching order data:', error)
+        toast.error('Không thể tải thông tin đơn hàng')
         navigate('/cart')
       } finally {
         setLoadingCart(false)
@@ -145,10 +161,10 @@ const Checkout = () => {
     }
 
     if (!loading && user) {
-      console.log('Fetching cart for user:', user)
-      fetchCart()
+      console.log('Fetching order data for user:', user)
+      fetchOrderData()
     }
-  }, [navigate, loading, user])
+  }, [navigate, loading, user, location.search])
 
   // Xử lý thay đổi form
   const handleChange = (e) => {
@@ -192,7 +208,7 @@ const Checkout = () => {
     try {
       // Chuẩn bị dữ liệu đơn hàng theo format API yêu cầu
       const orderItems = cartItems.map((item) => ({
-        productID: item.productId,
+        productID: item.productID || item.productId,
         size: item.size,
         color: item.color,
         quantity: item.quantity,
@@ -220,13 +236,20 @@ const Checkout = () => {
       console.log('Order API Response:', response)
 
       if (response && response.data) {
-        // Xóa giỏ hàng sau khi đặt hàng thành công
+        // Xóa giỏ hàng và đơn hàng trực tiếp sau khi đặt hàng thành công
         try {
-          console.log('Clearing cart...')
-          await cartApi.clearCart()
-          console.log('Cart cleared successfully')
-          // Dispatch cart change event with count=0
-          window.dispatchEvent(new CustomEvent('cartChanged', { detail: { count: 0 } }))
+          // Xóa đơn hàng trực tiếp nếu có
+          localStorage.removeItem('directOrder')
+
+          // Xóa giỏ hàng nếu không phải đơn hàng trực tiếp
+          const isDirectOrder = new URLSearchParams(location.search).get('direct') === 'true'
+          if (!isDirectOrder) {
+            console.log('Clearing cart...')
+            await cartApi.clearCart()
+            console.log('Cart cleared successfully')
+            // Dispatch cart change event with count=0
+            window.dispatchEvent(new CustomEvent('cartChanged', { detail: { count: 0 } }))
+          }
 
           toast.success('Đặt hàng thành công!')
 
@@ -248,15 +271,12 @@ const Checkout = () => {
           }, 2000)
         } catch (error) {
           console.error('Error clearing cart:', error)
-          toast.error('Đặt hàng thành công nhưng không thể xóa giỏ hàng')
-          navigate('/manage-order')
+          toast.error('Đặt hàng thành công nhưng có lỗi khi xóa giỏ hàng')
         }
-      } else {
-        toast.error('Không thể tạo đơn hàng. Vui lòng thử lại!')
       }
     } catch (error) {
       console.error('Error creating order:', error)
-      toast.error('Có lỗi xảy ra khi đặt hàng. Vui lòng thử lại!')
+      toast.error('Không thể tạo đơn hàng')
     }
   }
 

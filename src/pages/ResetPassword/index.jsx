@@ -8,7 +8,7 @@ import { routes } from '../../routes'
 export default function ResetPassword() {
   const navigate = useNavigate()
   const [email, setEmail] = useState()
-  const [newPassword, setNewPassword] = useState("")
+  const [newPassword, setNewPassword] = useState('')
   const [code, setCode] = useState()
   const [sent, setSent] = useState(false)
   const handSendVerifyCode = async () => {
