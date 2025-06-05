@@ -20,4 +20,5 @@ export const routes = {
   POLICIESANDREGULATION: '/policies-regulation',
   ORDERINGGUIDE: '/odering-instruction',
   CONTACTGUIDE: '/contact-instruction',
+  BANKTRANSFER: '/checkout/bank-transfer',
 }

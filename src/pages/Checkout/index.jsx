@@ -265,10 +265,19 @@ const Checkout = () => {
           }
           localStorage.setItem('userInfo', JSON.stringify(userInfo))
 
-          // Chuyển hướng đến trang quản lý đơn hàng
-          setTimeout(() => {
-            navigate('/manage-order')
-          }, 2000)
+          if (formData.paymentMethod === 'bank') {
+            // Chuyển sang trang QR, truyền orderID, amount, fullName
+            navigate('/checkout/bank-transfer', {
+              state: {
+                orderID: response.data.data.id, // tuỳ API trả về
+                amount: calcTotal(),
+              },
+            })
+          } else {
+            setTimeout(() => {
+              navigate('/manage-order')
+            }, 2000)
+          }
         } catch (error) {
           console.error('Error clearing cart:', error)
           toast.error('Đặt hàng thành công nhưng có lỗi khi xóa giỏ hàng')

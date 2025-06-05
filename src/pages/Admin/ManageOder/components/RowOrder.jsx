@@ -83,14 +83,14 @@ const RowOrder = ({ val, key, index, formatCurrency }) => {
           <select
             value={status}
             onChange={handleStatus}
-            className={`p-2 rounded-md text-white ${status === 'canceled' ? 'bg-red-500' : status === 'confirmed' ? 'bg-blue-500' : status === 'paid' ? 'bg-green-500' : status === 'delivery' ? 'bg-purple-500' : status === 'completed' ? 'bg-teal-500' : 'bg-yellow-500'}`}
+            className={`p-2 rounded-md text-white ${status === 'cancel' ? 'bg-red-500' : status === 'confirmed' ? 'bg-blue-500' : status === 'paid' ? 'bg-green-500' : status === 'delivery' ? 'bg-purple-500' : status === 'completed' ? 'bg-teal-500' : 'bg-yellow-500'}`}
           >
             <option value='pending'>Đợi duyệt</option>
             <option value='confirmed'>Duyệt</option>
             <option value='paid'>Đã thanh toán</option>
             <option value='delivery'>Đang giao</option>
             <option value='completed'>Hoàn thành</option>
-            <option value='canceled'>Đã hủy</option>
+            <option value='cancel'>Đã hủy</option>
           </select>
         </td>
       </tr>
