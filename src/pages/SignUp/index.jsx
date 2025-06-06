@@ -12,7 +12,7 @@ import { routes } from '../../routes'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faRotateRight } from '@fortawesome/free-solid-svg-icons'
 import NoAuthApi from '../../apis/noAuthApi'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { InputAdornment, IconButton } from '@mui/material'
 import { Visibility, VisibilityOff } from '@mui/icons-material'
 
@@ -33,7 +33,8 @@ const schema = yup.object().shape({
 
 export default function SignUp() {
   const [showPassword, setShowPassword] = useState(false)
-
+  const [timer, setTimer] = useState(0)
+  const [isSendMail, setIsSendMail] = useState(true)
   const navigation = useNavigate()
   const [emailUser, setEmailUser] = useState()
   const {
@@ -62,6 +63,8 @@ export default function SignUp() {
       const res = await NoAuthApi.sendVerifyCode(emailUser)
       if (res.data == true) {
         toast.success('Đã gửi mã qua email của bạn!')
+        setIsSendMail(false)
+        setTimer(60)
       } else {
         toast.error('Không thể gửi mã qua email của bạn!')
       }
@@ -70,6 +73,7 @@ export default function SignUp() {
       console.log('Có lỗi khi gửi code qua email: ', error)
     }
   }
+
   const onSubmit = async (data) => {
     try {
       const res = await userApi.signUp(
@@ -87,7 +91,7 @@ export default function SignUp() {
         navigation(routes.HOME)
       }
     } catch (error) {
-      toast.error('Không thể đăng kí tài khoản!')
+      toast.error('Không thể đăng kí tài khoản, email đã tồn tại hoặc code sai!')
       console.log('Error: ', error)
     }
   }
@@ -100,6 +104,18 @@ export default function SignUp() {
   const codeVerify = watch('codeVerify')
   const isSendCode = fullName && address && phone && username && email && password
   const isAllFilled = fullName && address && phone && username && email && password && codeVerify
+
+  useEffect(() => {
+    let interval
+    if (timer > 0) {
+      interval = setInterval(() => {
+        setTimer((prev) => prev - 1)
+      }, 1000)
+    } else {
+      setIsSendMail(true)
+    }
+    return () => clearInterval(interval)
+  }, [timer])
 
   return (
     <div
@@ -248,7 +264,7 @@ export default function SignUp() {
                 disabled={!isSendCode}
               >
                 <FontAwesomeIcon icon={faRotateRight} size='xl' />
-                Gửi mã
+                {isSendMail ? 'Gửi mã' : `Gửi lại (${timer}s)`}
               </Button>
             </div>
           </div>

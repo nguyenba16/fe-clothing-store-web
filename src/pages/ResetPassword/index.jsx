@@ -8,7 +8,7 @@ import { routes } from '../../routes'
 export default function ResetPassword() {
   const navigate = useNavigate()
   const [email, setEmail] = useState()
-  const [newPassword, setNewPassword] = useState()
+  const [newPassword, setNewPassword] = useState('')
   const [code, setCode] = useState()
   const [sent, setSent] = useState(false)
   const handSendVerifyCode = async () => {
@@ -81,7 +81,6 @@ export default function ResetPassword() {
           <p className='mt-3 text-center'>Vui lòng nhập các thông tin bên dưới!</p>
           <input
             onChange={(e) => setNewPassword(e.target.value)}
-            defaultValue={''}
             value={newPassword}
             className='w-full h-[50px] border-2 border-black p-3 mt-5 rounded-xl'
             placeholder='Nhập mật khẩu mới...'
