@@ -1,7 +1,8 @@
 import React, { use, useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import NoAuthApi from '../../apis/noAuthApi'
 import cartApi from '../../apis/cartApi'
+import orderApi from '../../apis/orderApi'
 import addcart from '../../assets/icons/addcart.svg'
 import photo4 from '../../assets/images/home/san pham.png'
 import ProductCarousel from '../../components/components/ProductCarousel'
@@ -165,6 +166,7 @@ export default function DetailProduct() {
   const [sizes, setSizes] = useState(sizeSample)
   const { user } = useAuth()
   const isAuthenticated = !!user
+  const navigate = useNavigate()
 
   const { id } = useParams()
 
@@ -299,10 +301,103 @@ export default function DetailProduct() {
       toast.error('Không thể thêm vào giỏ hàng')
     }
   }
-  // Handle buy now
-  const handleBuyNow = () => {
-    alert('Mua ngay')
+  const logicAddToCart = async () => {
+    // Validate color and size selection
+    if (selectedColor === null) {
+      toast.warning('Vui lòng chọn màu sắc')
+      return
+    }
+    if (selectedSize === null) {
+      toast.warning('Vui lòng chọn kích thước')
+      return
+    }
+
+    if (!isAuthenticated) {
+      toast.warning('Vui lòng đăng nhập để thêm vào giỏ hàng')
+      return
+    }
+
+    try {
+      const productId = id
+      const color = colors[selectedColor].name
+      const size = sizes[selectedSize]
+      const quantity = 1
+      await cartApi.addItemToCart(productId, size, color, quantity)
+      // Dispatch cart change event
+      window.dispatchEvent(new Event('cartChanged'))
+      // toast.success('Đã thêm vào giỏ hàng')
+    } catch (error) {
+      console.error('Error adding to cart:', error)
+      // toast.error('Không thể thêm vào giỏ hàng')
+    }
   }
+  // Handle buy now
+  const handleBuyNow = async () => {
+    // Validate color and size selection
+    if (selectedColor === null) {
+      toast.warning('Vui lòng chọn màu sắc')
+      return
+    }
+    if (selectedSize === null) {
+      toast.warning('Vui lòng chọn kích thước')
+      return
+    }
+
+    if (!isAuthenticated) {
+      toast.warning('Vui lòng đăng nhập để mua hàng')
+      navigate('/signin')
+      return
+    }
+
+    try {
+      const productId = id
+      const color = colors[selectedColor].name
+      const size = sizes[selectedSize]
+      const quantity = 1
+
+      // Lấy thông tin sản phẩm chi tiết để lấy đúng ảnh theo màu
+      const res = await NoAuthApi.getProductById(productId)
+      let imageUrl = productImages[selectedImage]
+      if (res.data.productImage && Array.isArray(res.data.productImage)) {
+        // Tìm ảnh theo màu nếu có
+        const colorImage = res.data.productImage.find((img) => img.color === color)
+        if (colorImage) {
+          imageUrl = colorImage.url
+        }
+      }
+
+      // Tạo đơn hàng trực tiếp
+      const orderItems = [
+        {
+          productID: productId,
+          size: size,
+          color: color,
+          quantity: quantity,
+          price: parseInt(price.replace(/[^0-9]/g, '')),
+          name: productName,
+          image: imageUrl,
+        },
+      ]
+
+      const orderData = {
+        oderItems: orderItems,
+        totalPrice: parseInt(price.replace(/[^0-9]/g, '')),
+        status: 'pending',
+      }
+
+      // Lưu thông tin đơn hàng vào localStorage để sử dụng ở trang checkout
+      localStorage.setItem('directOrder', JSON.stringify(orderData))
+
+      // Chuyển hướng đến trang thanh toán
+      navigate('/checkout?direct=true')
+
+      toast.success('Đang chuyển đến trang thanh toán')
+    } catch (error) {
+      console.error('Error in buy now:', error)
+      toast.error('Không thể xử lý yêu cầu mua ngay')
+    }
+  }
+
   return (
     <div>
       <div className='max-w-7xl mx-auto p-4 md:p-6 flex flex-col md:flex-row gap-8 font-text'>
@@ -362,7 +457,7 @@ export default function DetailProduct() {
                     }`}
                     style={{ backgroundColor: color.hex }}
                     onClick={() => setSelectedColor(index)}
-                    title={color.name}
+                    // title={color.name}
                   ></div>
                 ))}
               </div>

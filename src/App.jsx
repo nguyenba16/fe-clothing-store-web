@@ -24,6 +24,7 @@ import PolicyAndRegulations from './pages/PolicyAndRegulations'
 import OrderInstructions from './pages/OrderInstructionsNew'
 import OperatingPolicy from './pages/OperatingPolicyNew'
 import ContactInstructions from './pages/ContactInstructionsNew'
+import BankTransferQR from './pages/Checkout/BankTransferQR'
 function App() {
   const { loading } = useAuth()
   const [isActive, setActive] = useState(loading)
@@ -37,6 +38,7 @@ function App() {
 
   return (
     <Routes>
+      <Route path={routes.BANKTRANSFER} element={<BankTransferQR />} />
       <Route path={routes.SIGNIN} element={<SignIn />} />
       <Route path={routes.SIGNUP} element={<SignUp />} />
       <Route path={routes.RESETPASSWORD} element={<ResetPassword />} />
@@ -55,6 +57,7 @@ function App() {
         <Route path={routes.POLICIESANDREGULATION} element={<PolicyAndRegulations />} />
         <Route path={routes.ORDERINGGUIDE} element={<OrderInstructions />} />
         <Route path={routes.CONTACTGUIDE} element={<ContactInstructions />} />
+        <Route path={routes.BANKTRANSFER} element={<BankTransferQR />} />
       </Route>
       <Route element={<LayoutForAmin />}>
         <Route path={routes.MANAGEORDER} element={<ManageOder />} />
