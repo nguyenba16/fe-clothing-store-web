@@ -50,13 +50,13 @@ const RowOrder = ({ val, key, index, formatCurrency }) => {
       fetchProductInfo()
     }
   }, [val.oderItems])
-
+  console.log(val)
   return (
     <>
       <tr key={key} className='border-t'>
         <td className='border border-gray-500 p-2 text-center text-[20px]'>{index}</td>
         <td className='border border-gray-500 p-2 w-[200px] text-center text-[20px]'>
-          {val.userID.name}
+          {val?.userID?.name}
         </td>
         <td className='border border-gray-500 p-2 w-[350px] '>
           <strong>Mã đơn: </strong> {val.id}

@@ -72,9 +72,10 @@ export default function ChatBox() {
                   className={`${mess.role == 'ai' ? 'justify-start' : 'justify-end items-end gap-2'} flex`}
                 >
                   <div
-                    className={`p-2 max-w-[80%] bg-[#cecece] rounded-xl mt-2 ${mess.role == 'ai' ? 'text-left' : 'text-right'}`}
+                    className={`p-2 flex flex-col max-w-[80%] bg-[#cecece] rounded-xl mt-2 ${mess.role == 'ai' ? 'text-left' : 'text-right'}`}
                   >
-                    <ReactMarkdown>{mess.message}</ReactMarkdown>
+                    {/* <ReactMarkdown>{mess.message}</ReactMarkdown> */}
+                    <div dangerouslySetInnerHTML={{ __html: mess.message }} />
                   </div>
                   {mess.role == 'user' ? (
                     <Avatar

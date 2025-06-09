@@ -63,6 +63,7 @@ const RowProduct = ({ val, index, fetchProducts }) => {
         <td className='p-2 max-w-[12vw] text-[15px]'>{val.productName}</td>
         <td className='p-2 text-[15px] text-center'>{val.categrory.categroryName}</td>
         <td className='p-2 text-[15px] text-center'>{val.price}vnđ</td>
+
         <td className='p-2 text-[15px]'>
           {val.colors.map((item, i) => (
             <div
